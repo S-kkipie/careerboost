@@ -9,25 +9,9 @@ import { authClient } from "@/frontend/auth/auth";
 import { ErrorBoundary } from "@/frontend/components/error-boundary";
 import { TooltipProvider } from "@/frontend/components/ui/tooltip";
 import { apiClient, EdenProvider } from "@/frontend/lib/eden";
+import { spanishLocalization } from "@/frontend/lib/localization";
 import { getQueryClient } from "@/frontend/lib/query-client";
 import { ThemeProvider } from "./theme-provider";
-
-const spanishLocalization = {
-    auth: {
-        continueWith: "Continuar con {{provider}}",
-        email: "Correo electrónico",
-        emailPlaceholder: "correo@ejemplo.com",
-        or: "O",
-        signIn: "Bienvenido de vuelta",
-        signOut: "Cerrar sesión",
-        signUp: "Registrarse",
-    },
-    settings: {
-        account: "Cuenta",
-        saveChanges: "Guardar cambios",
-        security: "Seguridad",
-    },
-};
 
 export default function Providers({ children }: PropsWithChildren) {
     const queryClient = getQueryClient();
