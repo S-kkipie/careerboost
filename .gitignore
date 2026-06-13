@@ -34,3 +34,6 @@ drizzle/.snapshot/
 coverage/
 *.local
 *.tsbuildinfo
+
+# editor / agent tooling
+.claude/
