@@ -5,6 +5,7 @@ export const env = createEnv({
     server: {
         DATABASE_URL: z.url(),
         BETTER_AUTH_SECRET: z.string().min(32),
+        // Tightened to required in Spec 01 (auth); empty is OK during early dev.
         GOOGLE_CLIENT_ID: z.string(),
         GOOGLE_CLIENT_SECRET: z.string(),
         GEMINI_API_KEY: z.string().min(1),
