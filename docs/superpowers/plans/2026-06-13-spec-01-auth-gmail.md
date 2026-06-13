@@ -24,7 +24,7 @@
 
 **Deliberate adjustments (flagged — object during plan review if unwanted):**
 - **Add `accessType: "offline"` + `prompt: "select_account consent"`** to the Google provider — REQUIRED so Google issues a refresh token for offline Gmail access (your reference omitted these because it didn't need Gmail).
-- **Tiny `src/server/logger.ts` (console-based) instead of `@logtape/logtape`** — keeps spec-01 focused on auth; swap to logtape later. (If you want logtape now, say so.)
+- **Logging via `@logtape/logtape`** (+ `@logtape/elysia` request logging), configured once through Next `instrumentation.ts`; modules call `getLogger([...])`. Matches your reference.
 - **Skip `@elysiajs/openapi` docs route, `@elysiajs/cors`, `@elysiajs/server-timing`** — front and back are same-origin (one Next server), so no CORS; OpenAPI docs UI is non-essential for this spec. The Better Auth `openAPI()` plugin (built-in) is kept.
 - **No `core/<feature>/server/api/router` tree** — feature routers go in `src/server/routers/*.ts` for now (lighter; can migrate to the core/ layout later).
 
@@ -38,7 +38,7 @@
 ### Task 1: ServerConfig + restructure DB to `src/server/drizzle/`
 
 **Files:**
-- Create: `src/config/server-config.ts`, `src/server/logger.ts`, `src/server/drizzle/db.ts`, `src/server/drizzle/schemas/index.ts`, `src/server/drizzle/schemas/auth-schema.ts` (stub)
+- Create: `src/config/server-config.ts`, `src/server/logging.ts`, `src/instrumentation.ts`, `src/server/drizzle/db.ts`, `src/server/drizzle/schemas/index.ts`, `src/server/drizzle/schemas/auth-schema.ts` (stub)
 - Delete: `src/server/db/index.ts`, `src/server/db/schema.ts`
 - Modify: `drizzle.config.ts`, `AGENTS.md`
 
@@ -56,16 +56,45 @@ export const ServerConfig = {
 } as const;
 ```
 
-- [ ] **Step 2: Create `src/server/logger.ts`**
+- [ ] **Step 2: Set up logtape logging**
 
+Install: `pnpm add @logtape/logtape`
+
+Create `src/server/logging.ts` (one-time configuration; HMR-safe via guard + `reset`):
 ```ts
-type LogArgs = readonly unknown[];
+import { configure, getConsoleSink } from "@logtape/logtape";
 
-export const logger = {
-    warn: (...args: LogArgs) => console.warn("[careerboost]", ...args),
-    error: (...args: LogArgs) => console.error("[careerboost]", ...args),
-};
+let configured = false;
+
+export async function configureLogging() {
+    if (configured) return;
+    configured = true;
+    await configure({
+        reset: true,
+        sinks: { console: getConsoleSink() },
+        loggers: [
+            { category: ["server"], sinks: ["console"], lowestLevel: "info" },
+            {
+                category: ["logtape", "meta"],
+                sinks: ["console"],
+                lowestLevel: "warning",
+            },
+        ],
+    });
+}
 ```
+
+Create `src/instrumentation.ts` (this project uses a `src/` dir, so instrumentation lives there — Next runs `register()` once at server startup):
+```ts
+export async function register() {
+    if (process.env.NEXT_RUNTIME === "nodejs") {
+        const { configureLogging } = await import("@/server/logging");
+        await configureLogging();
+    }
+}
+```
+
+Modules log via `getLogger(["server", "<area>"])` from `@logtape/logtape` (see Tasks 2 and 4). If the installed logtape's `configure`/sink API differs, adjust to the installed version and report. NOTE: Vitest tests import modules that call `getLogger` without running `configureLogging()` — logtape then no-ops with a one-time meta warning; that's harmless (do NOT add type suppression to silence it).
 
 - [ ] **Step 3: Move the DB client to `src/server/drizzle/db.ts`**
 
@@ -105,13 +134,13 @@ Change the `schema` field to `"./src/server/drizzle/schemas/index.ts"` (keep the
 
 - [ ] **Step 9: Verify**
 
-Run: `pnpm check` (biome + tsc) → expect pass. Run: `pnpm db:push` → expect clean connect, "No changes detected" (stub schema is empty). Run: `pnpm build` → expect pass.
+Run: `pnpm check` (biome + tsc) → expect pass. Run: `pnpm db:push` → expect clean connect, "No changes detected" (stub schema is empty). Run: `pnpm build` → expect pass (Next picks up `instrumentation.ts`).
 
 - [ ] **Step 10: Commit**
 
 ```bash
 git add -A
-git commit -m "refactor: ServerConfig + move db to src/server/drizzle"
+git commit -m "refactor: ServerConfig + logtape + move db to src/server/drizzle"
 ```
 (Append a blank line + `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>` to every commit in this plan.)
 
@@ -133,6 +162,7 @@ RECENCY NOTE: if `@better-auth/drizzle-adapter` is not found for the installed b
 
 ```ts
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { getLogger } from "@logtape/logtape";
 import { APIError, betterAuth } from "better-auth";
 import { multiSession, openAPI } from "better-auth/plugins";
 import { headers } from "next/headers";
@@ -140,7 +170,8 @@ import { cache } from "react";
 import { ServerConfig } from "@/config/server-config";
 import { db } from "@/server/drizzle/db";
 import * as authSchema from "@/server/drizzle/schemas/auth-schema";
-import { logger } from "@/server/logger";
+
+const logger = getLogger(["server", "auth"]);
 
 export const auth = betterAuth({
     experimental: { joins: true },
@@ -166,10 +197,10 @@ export const authenticate = cache(async () => {
         return { user: session.user, session: session.session };
     } catch (e) {
         if (e instanceof APIError) {
-            logger.warn("auth APIError", e.message);
+            logger.warn("auth APIError: {error}", { error: e.message });
             return null;
         }
-        logger.error("auth error", e);
+        logger.error("auth error: {error}", { error: e });
         return null;
     }
 });
@@ -279,21 +310,27 @@ Expected: FAIL (default import undefined, or health path mismatch).
 
 - [ ] **Step 4: Rewrite `src/server/router.ts`**
 
+Install the logtape Elysia request-logger first: `pnpm add @logtape/elysia`.
+
 ```ts
+import { elysiaLogger } from "@logtape/elysia";
+import { getLogger } from "@logtape/logtape";
 import { Elysia } from "elysia";
 import { auth } from "@/server/auth/auth";
-import { logger } from "@/server/logger";
 import { healthRouter } from "@/server/routers/health";
+
+const logger = getLogger(["server", "error"]);
 
 const betterAuth = new Elysia({ name: "better-auth" }).mount(auth.handler);
 
 const app = new Elysia({ prefix: "/api/v1" })
     .use(betterAuth)
+    .use(elysiaLogger())
     .onError(({ error, code }) => {
-        logger.error(
-            `API ${code}`,
-            error instanceof Error ? error.message : String(error),
-        );
+        logger.error("API {code}: {error}", {
+            code,
+            error: error instanceof Error ? error.message : String(error),
+        });
         return { code: "INTERNAL_SERVER_ERROR" };
     })
     .use(healthRouter);
@@ -301,6 +338,7 @@ const app = new Elysia({ prefix: "/api/v1" })
 export default app;
 export type AppRouter = typeof app;
 ```
+NOTE: if `@logtape/elysia`'s `elysiaLogger()` API differs in the installed version (e.g. it needs a category arg), adjust per its docs and report. If it's incompatible with Elysia 1.4.x, drop `.use(elysiaLogger())` (keep the `getLogger` error logging) and report.
 
 - [ ] **Step 5: Run the test — expect PASS**
 
