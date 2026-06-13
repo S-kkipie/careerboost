@@ -97,6 +97,66 @@ RESEND_API_KEY=...                  # opcional (digest por correo)
 CRON_SECRET=...                     # protege /api/cron/digest
 ```
 
+## Google OAuth + Gmail
+
+### Crear credenciales en Google Cloud
+
+1. Crear (o seleccionar) un proyecto en [Google Cloud Console](https://console.cloud.google.com/).
+2. Ir a **APIs & Services → Library**, buscar **Gmail API** y hacer clic en **Enable**.
+3. Ir a **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**.
+   - Tipo de aplicación: **Web application**.
+   - **Authorized JavaScript origins:** `http://localhost:3000`
+     (añadir la URL de producción al desplegar).
+   - **Authorized redirect URIs:** `http://localhost:3000/api/v1/auth/callback/google`
+     (añadir el equivalente de producción al desplegar).
+4. Copiar el **Client ID** y el **Client Secret** al archivo `.env.local`:
+   ```bash
+   GOOGLE_CLIENT_ID=...
+   GOOGLE_CLIENT_SECRET=...
+   ```
+5. En **OAuth consent screen**:
+   - Añadir el scope `https://www.googleapis.com/auth/gmail.readonly`.
+   - Mientras la app esté en modo **Testing**, agregar la cuenta Google del egresado
+     como **Test user** (sin esto, Google bloquea el flujo de consentimiento).
+
+> **Nota de producción:** el proveedor está configurado con `accessType: "offline"` y
+> `prompt: "select_account consent"` para obtener un *refresh token* de Gmail.
+
+### Verificación manual de auth
+
+Estos pasos requieren credenciales reales de Google y un navegador; no pueden
+automatizarse en CI.
+
+1. Asegurarse de tener `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` válidos en
+   `.env.local`, luego ejecutar:
+   ```bash
+   pnpm dev
+   ```
+2. Iniciar sesión con Google usando el cliente de Better Auth (la UI de login llega en
+   la Spec 06; hasta entonces, llamar desde un botón temporal o la consola del navegador):
+   ```ts
+   import { authClient } from "@/frontend/auth/client";
+   await authClient.signIn.social({ provider: "google" });
+   ```
+3. Conectar Gmail (segunda pantalla de consentimiento para el scope `gmail.readonly`)
+   llamando al helper del cliente:
+   ```ts
+   import { requestGmailAccess } from "@/frontend/auth/gmail";
+   await requestGmailAccess();
+   ```
+4. Verificar que el usuario tiene Gmail conectado:
+   ```bash
+   GET /api/v1/me
+   # Respuesta esperada: { "user": { ... }, "gmailConnected": true }
+   ```
+5. Verificar que el token funciona de extremo a extremo:
+   ```bash
+   GET /api/v1/gmail/profile
+   # Respuesta esperada: { "email": "usuario@gmail.com" }
+   ```
+   - Sin conectar Gmail → `400 { "code": "gmail_not_connected" }`
+   - Sin sesión activa → `401 { "code": "unauthenticated" }`
+
 ## Scripts
 
 | Script | Acción |
