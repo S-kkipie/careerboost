@@ -15,7 +15,8 @@
         "db:migrate": "drizzle-kit migrate",
         "db:push": "drizzle-kit push",
         "db:studio": "drizzle-kit studio",
-        "prepare": "husky"
+        "prepare": "husky",
+        "auth:gen": "better-auth-cli generate --config ./src/server/auth/auth.ts --output ./src/server/drizzle/schemas/auth-schema.ts --yes"
     },
     "dependencies": {
         "@better-auth-ui/core": "^1.6.20",
