@@ -1,3 +1,4 @@
+import { APIError } from "better-auth";
 import { auth } from "@/server/auth/auth";
 
 export const GMAIL_READONLY_SCOPE =
@@ -15,16 +16,32 @@ export class GmailApiError extends Error {
     }
 }
 
+export class GmailNotConnectedError extends Error {
+    constructor() {
+        super("Google account not connected for Gmail access");
+        this.name = "GmailNotConnectedError";
+    }
+}
+
 export async function getGoogleAccessToken(
     userId: string,
     requestHeaders: Headers,
 ): Promise<string> {
-    const { accessToken } = await auth.api.getAccessToken({
-        body: { providerId: "google", userId },
-        headers: requestHeaders,
-    });
+    let accessToken: string | undefined;
+    try {
+        const res = await auth.api.getAccessToken({
+            body: { providerId: "google", userId },
+            headers: requestHeaders,
+        });
+        accessToken = res.accessToken;
+    } catch (e) {
+        if (e instanceof APIError) {
+            throw new GmailNotConnectedError();
+        }
+        throw e;
+    }
     if (!accessToken) {
-        throw new Error("No Google access token available for user");
+        throw new GmailNotConnectedError();
     }
     return accessToken;
 }

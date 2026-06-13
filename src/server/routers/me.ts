@@ -19,6 +19,7 @@ export const meRouter = new Elysia().get("/me", async ({ request }) => {
                 eq(account.providerId, "google"),
             ),
         );
+    // Better Auth stores scope comma-separated (e.g. "email,profile,https://...gmail.readonly")
     const gmailConnected = rows.some((r) =>
         r.scope?.includes(GMAIL_READONLY_SCOPE),
     );
