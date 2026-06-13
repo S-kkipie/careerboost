@@ -20,6 +20,9 @@ importers:
       '@elysiajs/eden':
         specifier: ^1.4.9
         version: 1.4.9(elysia@1.4.28(@sinclair/typebox@0.34.49)(exact-mirror@1.1.1)(file-type@22.0.1)(openapi-types@12.1.3)(typescript@5.9.3))
+      '@logtape/elysia':
+        specifier: ^2.1.4
+        version: 2.1.4(@logtape/logtape@2.1.4)(elysia@1.4.28(@sinclair/typebox@0.34.49)(exact-mirror@1.1.1)(file-type@22.0.1)(openapi-types@12.1.3)(typescript@5.9.3))
       '@logtape/logtape':
         specifier: ^2.1.4
         version: 2.1.4
@@ -961,6 +964,12 @@ packages:
 
   '@levischuck/tiny-cbor@0.2.11':
     resolution: {integrity: sha512-llBRm4dT4Z89aRsm6u2oEZ8tfwL/2l6BwpZ7JcyieouniDECM5AqNgr/y08zalEIvW3RSK4upYyybDcmjXqAow==}
+
+  '@logtape/elysia@2.1.4':
+    resolution: {integrity: sha512-RMwD4mWh3ZNgjiqvPUwvKkP/KwahD3WggtwLOhlvEk9CLLcdsQQMqCfbeG7XdGSDYcfsg7AFJGZNNvl8evii7w==}
+    peerDependencies:
+      '@logtape/logtape': ^2.1.4
+      elysia: ^1.4.0
 
   '@logtape/logtape@2.1.4':
     resolution: {integrity: sha512-ZQbAeHSxAd/bZKWwAfRIb4phTNuoSiaZoeE5GgfNwKxhik6L1+XZXQr0r8x2Bsm4K98B/d5InORVy0jcmA4kCA==}
@@ -3669,6 +3678,11 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   '@levischuck/tiny-cbor@0.2.11': {}
+
+  '@logtape/elysia@2.1.4(@logtape/logtape@2.1.4)(elysia@1.4.28(@sinclair/typebox@0.34.49)(exact-mirror@1.1.1)(file-type@22.0.1)(openapi-types@12.1.3)(typescript@5.9.3))':
+    dependencies:
+      '@logtape/logtape': 2.1.4
+      elysia: 1.4.28(@sinclair/typebox@0.34.49)(exact-mirror@1.1.1)(file-type@22.0.1)(openapi-types@12.1.3)(typescript@5.9.3)
 
   '@logtape/logtape@2.1.4': {}
 

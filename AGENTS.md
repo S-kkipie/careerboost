@@ -6,9 +6,8 @@
   It is **not** a Turborepo workspace — keep it one app, one deploy.
 - The Elysia instance is mounted as a catch-all route handler at
   `src/app/api/[[...slugs]]/route.ts` (`export const GET = app.handle` / `POST`).
-- The API is versioned: Elysia uses `prefix: "/api"` with routes grouped under `/v1`
-  (so endpoints live at `/api/v1/*`). The router type `AppRouter` is exported from
-  `src/server/router.ts`.
+- The API is versioned: Elysia uses `prefix: "/api/v1"` (so endpoints live at `/api/v1/*`).
+  The app is a default export from `src/server/router.ts`; `AppRouter` is a named type export.
 - Server/API code lives under `src/server/` (Elysia router, services, AI, Gmail, db).
 - Frontend code lives under `src/app/` (pages/layouts) and `src/frontend/`
   (providers, auth, lib, components/ui).
@@ -78,15 +77,18 @@ Prefer expressive code over explanatory comments.
 
 ## Backend (Elysia)
 
-- The single Elysia app (`src/server/router.ts`) uses `prefix: "/api"`, groups routes under
-  `/v1`, and is mounted once in `src/app/api/[[...slugs]]/route.ts`. Do not create parallel
-  Next.js route handlers for API logic.
+- The single Elysia app (`src/server/router.ts`) uses `prefix: "/api/v1"` and is mounted once
+  in `src/app/api/[[...slugs]]/route.ts`. Do not create parallel Next.js route handlers for API
+  logic. Feature routers are added via `.use()` on the main app.
+- The default export from `src/server/router.ts` is the Elysia instance; `AppRouter` is a named
+  type export from the same file.
 - Frontend calls the API through Eden (`eden-tanstack-react-query`): `useElysia()` (= `api.v1`)
   for React Query hooks, `apiClient` for imperative calls. Do not hand-roll `fetch` to `/api`.
 - Group routes by domain with Elysia plugins: `auth`, `profile`, `ingestion`, `matches`, `cron`.
 - Validate every input with Elysia's `t` schemas; do not trust request bodies.
-- Better Auth's handler is mounted inside Elysia (`/api/auth/*`). Watch the mount path vs the
-  `/api` prefix — verify the resolved URL, don't assume.
+- Better Auth's handler is mounted via a dedicated `betterAuth` sub-Elysia plugin using
+  `.mount(auth.handler)`. With `prefix: "/api/v1"` on the main app, auth endpoints live at
+  `/api/v1/auth/*` (matching `basePath: "/api/v1/auth"` in `src/server/auth/auth.ts`).
 - Keep route handlers thin: parse/validate → call a service in `src/server/services/` → return.
 
 ## Database (Drizzle + Postgres + pgvector)
