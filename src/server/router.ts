@@ -5,6 +5,7 @@ import { auth } from "@/server/auth/auth";
 import { gmailRouter } from "@/server/routers/gmail";
 import { healthRouter } from "@/server/routers/health";
 import { meRouter } from "@/server/routers/me";
+import { profileRouter } from "@/server/routers/profile";
 
 const logger = getLogger(["server", "error"]);
 
@@ -32,7 +33,8 @@ const app = new Elysia({ prefix: "/api/v1" })
     })
     .use(healthRouter)
     .use(meRouter)
-    .use(gmailRouter);
+    .use(gmailRouter)
+    .use(profileRouter);
 
 export default app;
 export type AppRouter = typeof app;
