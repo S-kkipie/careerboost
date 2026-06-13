@@ -1,4 +1,6 @@
-# CONECTA UNSA — Visión general del diseño
+# CareerBoost — Visión general del diseño
+
+> Producto: **CareerBoost**. Reto del hackathon: **CONECTA UNSA** (UNSA), usado solo como referencia.
 
 **Fecha:** 2026-06-13
 **Estado:** Aprobado para implementación

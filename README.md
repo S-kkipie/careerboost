@@ -1,6 +1,9 @@
-# CONECTA UNSA
+# CareerBoost
 
 **Oportunidades laborales inteligentes para egresados.**
+
+> Propuesta para el reto **CONECTA UNSA** del hackathon (Universidad Nacional de San Agustín).
+> *CareerBoost* es el nombre del producto; *CONECTA UNSA* se usa solo como referencia al desafío.
 
 Bolsa de trabajo inteligente que vive del lado del egresado: conecta su Gmail (solo
 lectura), limpia el ruido de los correos masivos de la bolsa institucional, extrae cada
@@ -121,7 +124,7 @@ El proyecto se construye en fases secuenciales. Cada spec vive en
 6. **Feed & UI** — onboarding, feed, match cards, panel impacto, filtros.
 7. **Digest & demo** — cron digest + datos de demo + guion.
 
-Visión general: [`2026-06-13-conecta-unsa-overview.md`](docs/superpowers/specs/2026-06-13-conecta-unsa-overview.md).
+Visión general: [`2026-06-13-careerboost-overview.md`](docs/superpowers/specs/2026-06-13-careerboost-overview.md).
 
 ## Alcance del MVP (hackathon)
 
