@@ -37,7 +37,9 @@ export const authenticate = cache(async () => {
             logger.warn("auth APIError: {error}", { error: e.message });
             return null;
         }
-        logger.error("auth error: {error}", { error: e });
+        logger.error("auth error: {error}", {
+            error: e instanceof Error ? e.message : String(e),
+        });
         return null;
     }
 });
