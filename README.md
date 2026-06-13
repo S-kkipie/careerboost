@@ -63,14 +63,14 @@ Elysia se monta dentro de Next.js como route handler catch-all. Un solo proceso,
 deploy:
 
 ```ts
-// app/api/[[...slugs]]/route.ts
-import { app } from "@/server/app"; // instancia Elysia con prefix "/api"
+// src/app/api/[[...slugs]]/route.ts
+import app from "@/server/router"; // Elysia, prefix "/api/v1", default export
 export const GET = app.handle;
 export const POST = app.handle;
 ```
 
-Better Auth se monta dentro de Elysia (`/api/auth/*`). El frontend Next consume la API con
-Eden Treaty type-safe.
+Better Auth se monta dentro de Elysia vía `.mount(auth.handler)` y vive en
+`/api/v1/auth/*`. El frontend Next consume la API con Eden Treaty type-safe.
 
 ## Puesta en marcha (local)
 
@@ -89,7 +89,7 @@ pnpm dev                            # http://localhost:3000
 ```bash
 DATABASE_URL=postgres://...
 BETTER_AUTH_SECRET=...
-BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 GEMINI_API_KEY=...
@@ -135,7 +135,7 @@ automatizarse en CI.
 2. Iniciar sesión con Google usando el cliente de Better Auth (la UI de login llega en
    la Spec 06; hasta entonces, llamar desde un botón temporal o la consola del navegador):
    ```ts
-   import { authClient } from "@/frontend/auth/client";
+   import { authClient } from "@/frontend/auth/auth";
    await authClient.signIn.social({ provider: "google" });
    ```
 3. Conectar Gmail (segunda pantalla de consentimiento para el scope `gmail.readonly`)
