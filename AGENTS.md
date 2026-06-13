@@ -6,9 +6,14 @@
   It is **not** a Turborepo workspace — keep it one app, one deploy.
 - The Elysia instance is mounted as a catch-all route handler at
   `src/app/api/[[...slugs]]/route.ts` (`export const GET = app.handle` / `POST`).
-- Server/API code lives under `src/server/` (Elysia routes, services, AI, Gmail, db).
-- Frontend code lives under `src/app/` (pages/layouts) and `src/components/`.
-- Shared types and the Eden Treaty client live under `src/lib/`.
+- The API is versioned: Elysia uses `prefix: "/api"` with routes grouped under `/v1`
+  (so endpoints live at `/api/v1/*`). The router type `AppRouter` is exported from
+  `src/server/router.ts`.
+- Server/API code lives under `src/server/` (Elysia router, services, AI, Gmail, db).
+- Frontend code lives under `src/app/` (pages/layouts) and `src/frontend/`
+  (providers, auth, lib, components/ui).
+- Config (env, client-config) lives under `src/config/`. The Eden client + query client
+  live under `src/frontend/lib/`.
 - Keep code, config, assets, and env examples at the repo root unless clearly module-level.
 
 ## Commands
@@ -74,8 +79,11 @@ Prefer expressive code over explanatory comments.
 
 ## Backend (Elysia)
 
-- The single Elysia app (`src/server/app.ts`) uses `prefix: "/api"` and is mounted once in
-  `src/app/api/[[...slugs]]/route.ts`. Do not create parallel Next.js route handlers for API logic.
+- The single Elysia app (`src/server/router.ts`) uses `prefix: "/api"`, groups routes under
+  `/v1`, and is mounted once in `src/app/api/[[...slugs]]/route.ts`. Do not create parallel
+  Next.js route handlers for API logic.
+- Frontend calls the API through Eden (`eden-tanstack-react-query`): `useElysia()` (= `api.v1`)
+  for React Query hooks, `apiClient` for imperative calls. Do not hand-roll `fetch` to `/api`.
 - Group routes by domain with Elysia plugins: `auth`, `profile`, `ingestion`, `matches`, `cron`.
 - Validate every input with Elysia's `t` schemas; do not trust request bodies.
 - Better Auth's handler is mounted inside Elysia (`/api/auth/*`). Watch the mount path vs the
