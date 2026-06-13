@@ -12,8 +12,7 @@
 - Server/API code lives under `src/server/` (Elysia router, services, AI, Gmail, db).
 - Frontend code lives under `src/app/` (pages/layouts) and `src/frontend/`
   (providers, auth, lib, components/ui).
-- Config (env, client-config) lives under `src/config/`. The Eden client + query client
-  live under `src/frontend/lib/`.
+- Config lives under `src/config/`: `ClientConfig` (client-safe) and `ServerConfig` (server-only: baseUrl + Google creds). The Eden client + query client live under `src/frontend/lib/`.
 - Keep code, config, assets, and env examples at the repo root unless clearly module-level.
 
 ## Commands
@@ -92,7 +91,7 @@ Prefer expressive code over explanatory comments.
 
 ## Database (Drizzle + Postgres + pgvector)
 
-- Drizzle is the single source of truth for the schema (`src/server/db/schema.ts`).
+- Drizzle is the single source of truth for the schema (`src/server/drizzle/schemas/`); the DB client is `src/server/drizzle/db.ts`.
 - Vectors use the `pgvector` `vector(768)` column type. Keep embedding dimension at **768**
   everywhere (Gemini `gemini-embedding-2` truncated via `outputDimensionality`).
 - Enable the `vector` extension in a migration before any vector column.
