@@ -2,7 +2,9 @@ import { elysiaLogger } from "@logtape/elysia";
 import { getLogger } from "@logtape/logtape";
 import { Elysia } from "elysia";
 import { auth } from "@/server/auth/auth";
+import { gmailRouter } from "@/server/routers/gmail";
 import { healthRouter } from "@/server/routers/health";
+import { meRouter } from "@/server/routers/me";
 
 const logger = getLogger(["server", "error"]);
 
@@ -28,7 +30,9 @@ const app = new Elysia({ prefix: "/api/v1" })
         set.status = 500;
         return { code: "INTERNAL_SERVER_ERROR" };
     })
-    .use(healthRouter);
+    .use(healthRouter)
+    .use(meRouter)
+    .use(gmailRouter);
 
 export default app;
 export type AppRouter = typeof app;
