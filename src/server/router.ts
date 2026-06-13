@@ -6,16 +6,7 @@ import { healthRouter } from "@/server/routers/health";
 
 const logger = getLogger(["server", "error"]);
 
-// Better Auth is wired with an explicit `/auth/*` route rather than `.mount`.
-// A root `.mount(auth.handler)` acts as a catch-all: it answers every unmatched
-// path with Better Auth's own bare 404, so Elysia never raises NOT_FOUND and the
-// `onError` handler below cannot shape the body. The `.all("/auth/*")` form scopes
-// the handler to auth paths only, letting unknown routes fall through to `onError`.
-// auth.handler still receives the full `/api/v1/auth/*` path it expects (basePath).
-const betterAuth = new Elysia({ name: "better-auth" }).all(
-    "/auth/*",
-    ({ request }) => auth.handler(request),
-);
+const betterAuth = new Elysia({ name: "better-auth" }).mount(auth.handler);
 
 const app = new Elysia({ prefix: "/api/v1" })
     .use(betterAuth)
