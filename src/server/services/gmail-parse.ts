@@ -37,12 +37,12 @@ export function stripHtml(html: string): string {
         .replace(/<style[\s\S]*?<\/style>/gi, " ")
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<[^>]+>/g, " ")
-        .replace(/&nbsp;/gi, " ")
-        .replace(/&amp;/gi, "&")
         .replace(/&lt;/gi, "<")
         .replace(/&gt;/gi, ">")
         .replace(/&#39;/gi, "'")
         .replace(/&quot;/gi, '"')
+        .replace(/&amp;/gi, "&")
+        .replace(/&nbsp;/gi, " ")
         .replace(/\s+/g, " ")
         .trim();
 }

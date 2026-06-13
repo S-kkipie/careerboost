@@ -80,6 +80,14 @@ describe("extractMessageText", () => {
         expect(extractMessageText(payload)).toBe("cuerpo");
     });
 
+    it("reads a non-text root body via the bare-body fallback", () => {
+        const payload = {
+            mimeType: "text/calendar",
+            body: { data: b64url("BEGIN:VCALENDAR") },
+        };
+        expect(extractMessageText(payload)).toBe("BEGIN:VCALENDAR");
+    });
+
     it("returns empty string for an empty payload", () => {
         expect(extractMessageText(undefined)).toBe("");
     });
