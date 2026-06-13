@@ -152,6 +152,9 @@ export async function runIngestion(params: {
 }): Promise<IngestionRun> {
     const { userId, accessToken } = params;
     const [run] = await db.insert(ingestionRuns).values({ userId }).returning();
+    if (!run) {
+        throw new Error("Failed to create ingestion run row");
+    }
 
     const metrics = {
         emailsScanned: 0,
@@ -177,6 +180,8 @@ export async function runIngestion(params: {
                 if (!msg.text) {
                     continue;
                 }
+                // Counts examined messages; a mid-message Gemini failure (caught
+                // below) leaves this scanned but in none of the 3 outcome buckets.
                 metrics.emailsScanned++;
                 const classified = await classifyEmail(msg.text);
                 if (!classified.is_job) {
@@ -207,5 +212,8 @@ export async function runIngestion(params: {
         .set({ finishedAt: new Date(), ...metrics })
         .where(eq(ingestionRuns.id, run.id))
         .returning();
+    if (!finished) {
+        throw new Error("Failed to finalize ingestion run row");
+    }
     return finished;
 }
