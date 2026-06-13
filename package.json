@@ -4,8 +4,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "next dev --experimental-next-config-strip-types",
-        "build": "next build --experimental-next-config-strip-types",
+        "dev": "next dev",
+        "build": "next build",
         "start": "next start",
         "check": "biome check . && tsc --noEmit",
         "fix": "biome check --write ."
@@ -28,7 +28,6 @@
         "@types/node": "^22.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "jiti": "^2.7.0",
         "typescript": "^5.7.0"
     }
 }
