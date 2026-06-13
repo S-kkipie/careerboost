@@ -9,4 +9,12 @@ describe("router", () => {
         expect(res.status).toBe(200);
         expect(await res.json()).toEqual({ ok: true });
     });
+
+    it("unknown route returns 404 { code: 'NOT_FOUND' }", async () => {
+        const res = await app.handle(
+            new Request("http://localhost/api/v1/nonexistent"),
+        );
+        expect(res.status).toBe(404);
+        expect(await res.json()).toEqual({ code: "NOT_FOUND" });
+    });
 });
