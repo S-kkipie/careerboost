@@ -9,7 +9,12 @@
         "start": "next start",
         "check": "biome check . && tsc --noEmit",
         "fix": "biome check --write .",
-        "test": "vitest run"
+        "test": "vitest run",
+        "db:init": "tsx scripts/db-init.ts",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:push": "drizzle-kit push",
+        "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
         "@better-auth-ui/core": "^1.6.20",
@@ -20,12 +25,14 @@
         "@tanstack/react-query": "^5.101.0",
         "better-auth": "^1.6.18",
         "clsx": "^2.1.1",
+        "drizzle-orm": "^0.45.2",
         "eden-tanstack-react-query": "^0.1.10",
         "elysia": "^1.4.28",
         "next": "^16.0.0",
         "next-themes": "^0.4.6",
         "nuqs": "^2.8.9",
         "postcss": "^8.5.15",
+        "postgres": "^3.4.9",
         "radix-ui": "^1.5.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -38,6 +45,9 @@
         "@types/node": "^22.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
+        "dotenv": "^17.4.2",
+        "drizzle-kit": "^0.31.10",
+        "tsx": "^4.22.4",
         "typescript": "^5.7.0",
         "vite-tsconfig-paths": "^6.1.1",
         "vitest": "^4.1.8"
