@@ -55,6 +55,22 @@ describe("detectSalaryFromText", () => {
             detectSalaryFromText("Convocatoria 2026 para egresados"),
         ).toBeNull();
     });
+
+    it("ignores a currency-less number range (phones, counts)", () => {
+        expect(detectSalaryFromText("Tel: 987-654-321")).toBeNull();
+        expect(detectSalaryFromText("De 100 a 200 participantes")).toBeNull();
+    });
+
+    it("ignores a bare year range even when a currency word appears", () => {
+        expect(
+            detectSalaryFromText("Contrato de 2024 a 2026, pago en USD"),
+        ).toBeNull();
+    });
+
+    it("parses an amount with decimal cents", () => {
+        const s = detectSalaryFromText("Remuneración S/ 1,500.50 mensual");
+        expect(s?.salarioMin).toBe(1500);
+    });
 });
 
 describe("normalizeSalary", () => {

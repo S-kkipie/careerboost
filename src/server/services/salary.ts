@@ -17,7 +17,9 @@ function isPlausible(n: number): boolean {
 }
 
 function parseAmount(raw: string): number {
-    return Number.parseInt(raw.replace(/[.,\s]/g, ""), 10);
+    // Drop a trailing decimal part (".50" / ",50"), then strip thousands separators.
+    const noDecimal = raw.replace(/[.,]\d{2}$/, "");
+    return Number.parseInt(noDecimal.replace(/[.,\s]/g, ""), 10);
 }
 
 export function normalizeMoneda(raw: string | null): string | null {
@@ -37,23 +39,35 @@ export function normalizeMoneda(raw: string | null): string | null {
 const AMOUNT = String.raw`(\d[\d.,]*\d|\d)`;
 const RANGE_RE = new RegExp(`${AMOUNT}\\s*(?:-|–|a|hasta|y)\\s*${AMOUNT}`, "i");
 const BEFORE_RE = new RegExp(`(?:s/\\.?|us\\$|usd|\\$)\\s*${AMOUNT}`, "i");
-const AFTER_RE = new RegExp(`${AMOUNT}\\s*(?:soles|pen|d[óo]lares|usd)`, "i");
+const AFTER_RE = new RegExp(
+    `${AMOUNT}\\s*(?:soles|\\bpen\\b|d[óo]lares|\\busd\\b)`,
+    "i",
+);
 
 export function detectSalaryFromText(text: string): NormalizedSalary | null {
+    // NOTE: moneda is detected across the whole text (first USD hint wins, else
+    // PEN). When an ad cites two currencies the label may not match the detected
+    // amount — accepted MVP limitation. The single-amount path also still accepts
+    // a 4-digit year directly adjacent to a currency word (e.g. "2025 USD"); rare
+    // phrasing, accepted limitation.
     const moneda = normalizeMoneda(text);
 
-    const range = text.match(RANGE_RE);
-    if (range) {
-        const min = parseAmount(range[1]);
-        const max = parseAmount(range[2]);
-        if (isPlausible(min) && isPlausible(max)) {
-            return {
-                salarioMin: min,
-                salarioMax: max,
-                moneda,
-                salarioPeriodo: null,
-                salarioExplicito: true,
-            };
+    // A range counts as salary only when a currency marker is present, bounds are
+    // ordered, and the gap is wide enough to not be a consecutive year pair.
+    if (moneda !== null) {
+        const range = text.match(RANGE_RE);
+        if (range) {
+            const min = parseAmount(range[1]);
+            const max = parseAmount(range[2]);
+            if (isPlausible(min) && isPlausible(max) && max - min >= 50) {
+                return {
+                    salarioMin: min,
+                    salarioMax: max,
+                    moneda,
+                    salarioPeriodo: null,
+                    salarioExplicito: true,
+                };
+            }
         }
     }
 
