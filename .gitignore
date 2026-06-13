@@ -35,5 +35,8 @@ coverage/
 *.local
 *.tsbuildinfo
 
+# user uploads (CV PDFs)
+uploads/
+
 # editor / agent tooling
 .claude/
