@@ -12,5 +12,9 @@
     "javascript": {
         "formatter": { "quoteStyle": "double", "semicolons": "always" }
     },
-    "assist": { "actions": { "source": { "organizeImports": "on" } } }
+    "assist": { "actions": { "source": { "organizeImports": "on" } } },
+    "css": {
+        "parser": { "cssModules": false, "tailwindDirectives": true },
+        "linter": { "enabled": false }
+    }
 }
