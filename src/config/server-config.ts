@@ -6,4 +6,7 @@ export const ServerConfig = {
         clientId: env.GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
+    gemini: {
+        apiKey: env.GEMINI_API_KEY,
+    },
 } as const;
