@@ -8,6 +8,13 @@ export interface GmailProfile {
     messagesTotal: number;
 }
 
+export class GmailApiError extends Error {
+    constructor(public readonly status: number) {
+        super(`Gmail API error ${status}`);
+        this.name = "GmailApiError";
+    }
+}
+
 export async function getGoogleAccessToken(
     userId: string,
     requestHeaders: Headers,
@@ -16,6 +23,9 @@ export async function getGoogleAccessToken(
         body: { providerId: "google", userId },
         headers: requestHeaders,
     });
+    if (!accessToken) {
+        throw new Error("No Google access token available for user");
+    }
     return accessToken;
 }
 
@@ -27,7 +37,7 @@ export async function getGmailProfile(
         { headers: { Authorization: `Bearer ${accessToken}` } },
     );
     if (!res.ok) {
-        throw new Error(`Gmail API error ${res.status}`);
+        throw new GmailApiError(res.status);
     }
     return (await res.json()) as GmailProfile;
 }
