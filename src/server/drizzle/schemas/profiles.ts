@@ -9,6 +9,8 @@ export const profiles = pgTable("profiles", {
     grado: text("grado"), // egresado | bachiller | titulado (MVP: egresado)
     ubicacion: text("ubicacion"),
     intereses: text("intereses").array(),
+    skills: text("skills").array(),
+    experienciaResumen: text("experiencia_resumen"),
     expectativaSalarial: integer("expectativa_salarial"),
     cvUrl: text("cv_url"),
     rawCvText: text("raw_cv_text"),
