@@ -177,8 +177,9 @@ export const authClient = createAuthClient({ baseURL: ClientConfig.baseUrl });
 `drizzle-orm` `postgres` `drizzle-kit` · `tailwindcss`(v4) · `@biomejs/biome` `husky`.
 
 ### Scripts (package.json)
-`dev`, `build`, `start`, `check` (`biome check`), `fix` (`biome check --write`),
-`db:generate`, `db:migrate`, `db:push`, `db:studio`.
+`dev`, `build`, `start`, `check` (`biome check . && tsc --noEmit`), `fix` (`biome check --write .`),
+`db:init` (`tsx scripts/db-init.ts` — enables the pgvector extension), `db:generate`,
+`db:migrate`, `db:push`, `db:studio`.
 
 ## Variables de entorno (.env.example)
 `DATABASE_URL`, `BETTER_AUTH_SECRET`, `NEXT_PUBLIC_APP_URL`, `GOOGLE_CLIENT_ID`,
