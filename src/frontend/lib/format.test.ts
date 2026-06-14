@@ -124,6 +124,13 @@ describe("formatDeadline", () => {
             urgent: false,
         });
     });
+    it("returns null on a non-ISO value instead of throwing", () => {
+        // Guards against an unexpected shape arriving over the network.
+        expect(formatDeadline("not-a-date", "2026-06-14")).toBeNull();
+        expect(
+            formatDeadline("2026-06-25T00:00:00.000Z", "2026-06-14"),
+        ).toBeNull();
+    });
 });
 
 describe("errorCode / errorMessage", () => {

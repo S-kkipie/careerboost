@@ -105,6 +105,8 @@ export interface DeadlineBadge {
     urgent: boolean;
 }
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 // `deadline` and `today` are YYYY-MM-DD strings; lexicographic compare equals
 // chronological for that format. Pure — the caller supplies `today`.
 export function formatDeadline(
@@ -112,6 +114,11 @@ export function formatDeadline(
     today: string,
 ): DeadlineBadge | null {
     if (!deadline) {
+        return null;
+    }
+    // Data crosses the network — only format a well-formed ISO date and never
+    // throw on an unexpected shape (RegExp.test coerces non-strings to string).
+    if (!ISO_DATE_RE.test(deadline)) {
         return null;
     }
     if (deadline < today) {
