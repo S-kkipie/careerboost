@@ -40,7 +40,7 @@ export function FiltersBar({
                 {MODALIDADES.map((m) => (
                     <Button
                         key={m === "" ? "todas" : m}
-                        variant={modalidad === m ? "primary" : "ghost"}
+                        variant={modalidad === m ? "default" : "ghost"}
                         size="sm"
                         onClick={() => onModalidadChange(m)}
                     >
