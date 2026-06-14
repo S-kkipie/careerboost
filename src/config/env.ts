@@ -10,6 +10,7 @@ export const env = createEnv({
         GOOGLE_CLIENT_SECRET: z.string(),
         GEMINI_API_KEY: z.string().min(1),
         RESEND_API_KEY: z.string().optional(),
+        RESEND_FROM: z.string().optional(),
         CRON_SECRET: z.string().min(16),
         // Spec 04 — comma-separated bolsa sender addresses; empty falls back to a const.
         BOLSA_SENDERS: z.string().optional(),
@@ -24,6 +25,7 @@ export const env = createEnv({
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
         GEMINI_API_KEY: process.env.GEMINI_API_KEY,
         RESEND_API_KEY: process.env.RESEND_API_KEY,
+        RESEND_FROM: process.env.RESEND_FROM,
         CRON_SECRET: process.env.CRON_SECRET,
         BOLSA_SENDERS: process.env.BOLSA_SENDERS,
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
