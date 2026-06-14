@@ -46,6 +46,7 @@ export function FiltersBar({
                     checked={soloConSalario}
                     onCheckedChange={onSoloConSalarioChange}
                     size="sm"
+                    className="data-[state=checked]:bg-brand"
                 />
                 <label
                     htmlFor="solo-con-salario"
