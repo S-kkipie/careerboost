@@ -16,9 +16,11 @@ import type {
     RerankFlags,
     RerankItem,
 } from "@/server/ai/rerank";
+import { rerankJobs } from "@/server/ai/rerank";
 import { db } from "@/server/drizzle/db";
 import { jobs } from "@/server/drizzle/schemas/jobs";
 import { type Match, matches } from "@/server/drizzle/schemas/matches";
+import { getProfile } from "@/server/services/profile";
 
 export const RETRIEVAL_LIMIT = 30;
 export const SALARY_BOOST = 0.05;
@@ -282,6 +284,49 @@ export async function setMatchStatus(
         .where(and(eq(matches.id, matchId), eq(matches.userId, userId)))
         .returning();
     return row ?? null;
+}
+
+// --- Orchestrator (calls Gemini; verified manually) ---
+export async function runMatching(params: {
+    userId: string;
+}): Promise<{ count: number }> {
+    const { userId } = params;
+    const profile = await getProfile(userId);
+    if (!profile || !profile.embedding) {
+        throw new ProfileNotReadyError();
+    }
+
+    const candidates = await retrieveCandidates(
+        userId,
+        profile.embedding,
+        profile.ubicacion,
+    );
+    if (candidates.length === 0) {
+        return { count: 0 };
+    }
+
+    const scored = candidates.map((c) => ({
+        jobId: c.id,
+        score: computeScore({
+            distance: c.distance,
+            salarioExplicito: c.salarioExplicito,
+        }),
+        salarioExplicito: c.salarioExplicito,
+    }));
+
+    const llm = await rerankJobs(
+        {
+            escuelaProfesional: profile.escuelaProfesional,
+            skills: profile.skills,
+            experienciaResumen: profile.experienciaResumen,
+            intereses: profile.intereses,
+        },
+        buildRerankCandidates(candidates),
+    );
+
+    const merged = mergeRerank(scored, llm);
+    const count = await persistMatches(userId, merged);
+    return { count };
 }
 
 // Upsert matches on (user_id, job_id). On conflict, update scoring fields only

@@ -200,8 +200,10 @@ import { jobs } from "@/server/drizzle/schemas/jobs";
 import { matches } from "@/server/drizzle/schemas/matches";
 import {
     getFeed,
+    ProfileNotReadyError,
     persistMatches,
     retrieveCandidates,
+    runMatching,
     type ScoredMatch,
     setMatchStatus,
 } from "@/server/services/matching";
@@ -485,5 +487,13 @@ describe("getFeed + setMatchStatus", () => {
             "saved",
         );
         expect(result).toBeNull();
+    });
+});
+
+describe("runMatching guard", () => {
+    it("throws ProfileNotReadyError when the user has no profile", async () => {
+        await expect(
+            runMatching({ userId: "spec05-no-profile-user" }),
+        ).rejects.toBeInstanceOf(ProfileNotReadyError);
     });
 });
