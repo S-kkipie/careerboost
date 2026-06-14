@@ -28,7 +28,7 @@ export function UploadCvStep() {
     return (
         <div className="flex flex-col items-center gap-6 text-center">
             <div className="rounded-2xl bg-brand/10 p-4 text-brand">
-                <FileText className="size-8" />
+                <FileText aria-hidden="true" className="size-8" />
             </div>
             <div className="space-y-2">
                 <h2 className="font-serif font-bold text-2xl text-foreground">
@@ -41,6 +41,7 @@ export function UploadCvStep() {
             </div>
             <label
                 htmlFor="cv-file"
+                aria-disabled={uploadCv.isPending}
                 className={cn(
                     "flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border p-8 transition-colors",
                     uploadCv.isPending
@@ -68,7 +69,10 @@ export function UploadCvStep() {
                     </>
                 ) : (
                     <>
-                        <UploadCloud className="size-10 text-muted-foreground" />
+                        <UploadCloud
+                            aria-hidden="true"
+                            className="size-10 text-muted-foreground"
+                        />
                         <p className="text-muted-foreground text-sm">
                             Arrastra tu archivo aquí o
                         </p>

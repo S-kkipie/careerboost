@@ -8,7 +8,7 @@ export function ConnectGmailStep() {
     return (
         <div className="flex flex-col items-center gap-6 text-center">
             <div className="rounded-2xl bg-brand/10 p-4 text-brand">
-                <Mail className="size-8" />
+                <Mail aria-hidden="true" className="size-8" />
             </div>
             <div className="space-y-2">
                 <h2 className="font-serif font-bold text-2xl text-foreground">
