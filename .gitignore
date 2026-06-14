@@ -40,3 +40,6 @@ uploads/
 
 # editor / agent tooling
 .claude/
+
+# Visual brainstorm companion (superpowers)
+.superpowers/
