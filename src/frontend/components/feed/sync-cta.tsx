@@ -32,7 +32,7 @@ export function SyncCta({ onSync }: SyncCtaProps) {
             </EmptyHeader>
             <EmptyContent>
                 <Button type="button" size="lg" onClick={onSync}>
-                    <Sparkles />
+                    <Sparkles aria-hidden="true" />
                     Sincronizar mi bolsa
                 </Button>
             </EmptyContent>

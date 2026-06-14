@@ -23,6 +23,11 @@ export function useSyncBolsa(): UseSyncBolsa {
     const [error, setError] = useState<unknown>(null);
 
     const start = useCallback(() => {
+        // Ignore re-entry while a run is already in flight (guards a double-click
+        // before the progress view takes over the body).
+        if (stage === "ingesting" || stage === "matching") {
+            return;
+        }
         setError(null);
         setStage("ingesting");
         void (async () => {
@@ -36,7 +41,7 @@ export function useSyncBolsa(): UseSyncBolsa {
                 setStage("error");
             }
         })();
-    }, [runIngestion, runMatching]);
+    }, [runIngestion, runMatching, stage]);
 
     return {
         stage,

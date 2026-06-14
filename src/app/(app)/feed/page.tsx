@@ -121,7 +121,7 @@ function FeedInner() {
                     size="sm"
                     onClick={sync.start}
                 >
-                    <RefreshCw />
+                    <RefreshCw aria-hidden="true" />
                     Sincronizar ahora
                 </Button>
             </div>
