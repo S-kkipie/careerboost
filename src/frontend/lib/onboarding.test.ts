@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+    type SyncStage,
     shouldRedirectToFeed,
     shouldRedirectToOnboarding,
-    type SyncStage,
     syncStageLabel,
 } from "@/frontend/lib/onboarding";
 
