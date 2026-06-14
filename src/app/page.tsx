@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { authClient } from "@/frontend/auth/auth";
-import { Button } from "@/frontend/components/ui/button";
+import { Hero } from "@/frontend/components/landing/hero";
+import { HowItWorks } from "@/frontend/components/landing/how-it-works";
+import { ImpactBand } from "@/frontend/components/landing/impact-band";
+import { LandingFooter } from "@/frontend/components/landing/landing-footer";
+import { LandingNav } from "@/frontend/components/landing/landing-nav";
 import { Spinner } from "@/frontend/components/ui/spinner";
 
 export default function Home() {
@@ -16,13 +20,6 @@ export default function Home() {
         }
     }, [isPending, session, router]);
 
-    function handleLogin() {
-        void authClient.signIn.social({
-            provider: "google",
-            callbackURL: "/onboarding",
-        });
-    }
-
     if (isPending || session) {
         return (
             <div className="flex min-h-screen items-center justify-center">
@@ -32,15 +29,14 @@ export default function Home() {
     }
 
     return (
-        <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center gap-6 px-4 text-center">
-            <h1 className="font-bold text-4xl text-foreground">CareerBoost</h1>
-            <p className="text-lg text-muted-foreground">
-                Empleos que hacen match con tu perfil profesional. Sin ruido,
-                con claridad salarial, desde tu correo institucional.
-            </p>
-            <Button size="default" onClick={handleLogin}>
-                Continuar con Google
-            </Button>
-        </main>
+        <div className="min-h-screen bg-background text-foreground">
+            <LandingNav />
+            <main className="pt-16">
+                <Hero />
+                <ImpactBand />
+                <HowItWorks />
+            </main>
+            <LandingFooter />
+        </div>
     );
 }
