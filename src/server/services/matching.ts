@@ -1,8 +1,22 @@
+import {
+    and,
+    cosineDistance,
+    eq,
+    gte,
+    ilike,
+    isNotNull,
+    isNull,
+    or,
+    sql,
+} from "drizzle-orm";
 import type {
     RerankCandidateInput,
     RerankFlags,
     RerankItem,
 } from "@/server/ai/rerank";
+import { db } from "@/server/drizzle/db";
+import { jobs } from "@/server/drizzle/schemas/jobs";
+import { matches } from "@/server/drizzle/schemas/matches";
 
 export const RETRIEVAL_LIMIT = 30;
 export const SALARY_BOOST = 0.05;
@@ -112,4 +126,84 @@ export function mergeRerank(
             },
         };
     });
+}
+
+// Semantic retrieval over the user's own jobs with hard filters. Per-user
+// isolation is enforced by the user_id predicate.
+export async function retrieveCandidates(
+    userId: string,
+    profileEmbedding: number[],
+    profileUbicacion: string | null,
+): Promise<Candidate[]> {
+    const today = new Date().toISOString().slice(0, 10);
+    const distance = sql<number>`${cosineDistance(jobs.embedding, profileEmbedding)}`;
+
+    const conditions = [
+        eq(jobs.userId, userId),
+        eq(jobs.isJob, true),
+        isNotNull(jobs.embedding),
+        or(isNull(jobs.deadline), gte(jobs.deadline, today)),
+    ];
+    const city = profileUbicacion?.trim();
+    if (city) {
+        conditions.push(
+            or(
+                eq(jobs.modalidad, "remoto"),
+                isNull(jobs.ubicacion),
+                ilike(jobs.ubicacion, `%${city}%`),
+            ),
+        );
+    }
+
+    return db
+        .select({
+            id: jobs.id,
+            titulo: jobs.titulo,
+            empresa: jobs.empresa,
+            modalidad: jobs.modalidad,
+            ubicacion: jobs.ubicacion,
+            salarioMin: jobs.salarioMin,
+            salarioMax: jobs.salarioMax,
+            moneda: jobs.moneda,
+            salarioPeriodo: jobs.salarioPeriodo,
+            salarioExplicito: jobs.salarioExplicito,
+            requisitos: jobs.requisitos,
+            skills: jobs.skills,
+            applyLink: jobs.applyLink,
+            distance,
+        })
+        .from(jobs)
+        .where(and(...conditions))
+        .orderBy(distance)
+        .limit(RETRIEVAL_LIMIT);
+}
+
+// Upsert matches on (user_id, job_id). On conflict, update scoring fields only
+// so the user's status (seen/saved/dismissed) is preserved across recalcs.
+export async function persistMatches(
+    userId: string,
+    items: ScoredMatch[],
+): Promise<number> {
+    for (const m of items) {
+        await db
+            .insert(matches)
+            .values({
+                userId,
+                jobId: m.jobId,
+                score: m.score,
+                rerankScore: m.rerankScore,
+                explanation: m.explanation,
+                flags: m.flags,
+            })
+            .onConflictDoUpdate({
+                target: [matches.userId, matches.jobId],
+                set: {
+                    score: m.score,
+                    rerankScore: m.rerankScore,
+                    explanation: m.explanation,
+                    flags: m.flags,
+                },
+            });
+    }
+    return items.length;
 }

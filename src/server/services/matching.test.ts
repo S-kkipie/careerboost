@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 import type { RerankItem } from "@/server/ai/rerank";
 import {
     buildRerankCandidates,
@@ -190,5 +190,142 @@ describe("mergeRerank", () => {
         ];
         const merged = mergeRerank(scored, llm);
         expect(merged.map((m) => m.jobId).sort()).toEqual(["job-1", "job-2"]);
+    });
+});
+
+import { and, eq } from "drizzle-orm";
+import { db } from "@/server/drizzle/db";
+import { user } from "@/server/drizzle/schemas/auth-schema";
+import { jobs } from "@/server/drizzle/schemas/jobs";
+import { matches } from "@/server/drizzle/schemas/matches";
+import {
+    persistMatches,
+    retrieveCandidates,
+    type ScoredMatch,
+} from "@/server/services/matching";
+
+const T3_USER = "spec05-retrieval-test-user";
+
+// Distinct deterministic 768-dim vectors. vec(0) is the query target.
+function vec(seed: number): number[] {
+    return Array.from({ length: 768 }, (_, i) => (i === seed ? 1 : 0));
+}
+
+function jobRow(overrides: Partial<typeof jobs.$inferInsert>) {
+    return {
+        userId: T3_USER,
+        gmailMsgId: `m-${overrides.dedupeHash ?? "x"}`,
+        dedupeHash: `h-${overrides.titulo ?? "x"}`,
+        titulo: "Job",
+        isJob: true,
+        salarioExplicito: false,
+        embedding: vec(0),
+        ...overrides,
+    };
+}
+
+describe("retrieveCandidates + persistMatches", () => {
+    afterAll(async () => {
+        await db.delete(user).where(eq(user.id, T3_USER));
+    });
+
+    it("retrieves only this user's vigentes job rows ordered by cosine distance", async () => {
+        await db.insert(user).values({
+            id: T3_USER,
+            name: "Retrieval Test",
+            email: "spec05-retrieval-test@example.com",
+            emailVerified: false,
+        });
+
+        await db.insert(jobs).values([
+            jobRow({
+                gmailMsgId: "m-near",
+                dedupeHash: "near",
+                titulo: "near",
+                embedding: vec(0),
+            }),
+            jobRow({
+                gmailMsgId: "m-far",
+                dedupeHash: "far",
+                titulo: "far",
+                embedding: vec(5),
+            }),
+            // Noise (is_job false) must be excluded.
+            jobRow({
+                gmailMsgId: "m-noise",
+                dedupeHash: "noise",
+                titulo: "noise",
+                isJob: false,
+                embedding: vec(0),
+            }),
+            // Expired deadline must be excluded.
+            jobRow({
+                gmailMsgId: "m-old",
+                dedupeHash: "old",
+                titulo: "old",
+                deadline: "2000-01-01",
+                embedding: vec(0),
+            }),
+        ]);
+
+        const candidates = await retrieveCandidates(T3_USER, vec(0), null);
+        const titles = candidates.map((c) => c.titulo);
+        expect(titles).toContain("near");
+        expect(titles).toContain("far");
+        expect(titles).not.toContain("noise");
+        expect(titles).not.toContain("old");
+        // Nearest first.
+        expect(candidates[0]?.titulo).toBe("near");
+        expect(candidates[0]?.distance).toBeLessThan(
+            candidates[1]?.distance ?? 1,
+        );
+    });
+
+    it("upserts matches and preserves a saved/dismissed status across recalculation", async () => {
+        const [job] = await db
+            .select({ id: jobs.id })
+            .from(jobs)
+            .where(and(eq(jobs.userId, T3_USER), eq(jobs.titulo, "near")));
+        const jobId = job?.id ?? "";
+
+        const first: ScoredMatch[] = [
+            {
+                jobId,
+                score: 0.8,
+                rerankScore: 70,
+                explanation: "v1",
+                flags: { skills_match: true, salario_transparente: false },
+            },
+        ];
+        const inserted = await persistMatches(T3_USER, first);
+        expect(inserted).toBe(1);
+
+        // User saves it.
+        await db
+            .update(matches)
+            .set({ status: "saved" })
+            .where(and(eq(matches.userId, T3_USER), eq(matches.jobId, jobId)));
+
+        // Recalculate with new scores.
+        const second: ScoredMatch[] = [
+            {
+                jobId,
+                score: 0.9,
+                rerankScore: 95,
+                explanation: "v2",
+                flags: { skills_match: true, salario_transparente: true },
+            },
+        ];
+        await persistMatches(T3_USER, second);
+
+        const rows = await db
+            .select()
+            .from(matches)
+            .where(and(eq(matches.userId, T3_USER), eq(matches.jobId, jobId)));
+        expect(rows).toHaveLength(1);
+        expect(rows[0]?.rerankScore).toBe(95);
+        expect(rows[0]?.explanation).toBe("v2");
+        // Status preserved.
+        expect(rows[0]?.status).toBe("saved");
     });
 });
