@@ -292,7 +292,7 @@ export async function runMatching(params: {
 }): Promise<{ count: number }> {
     const { userId } = params;
     const profile = await getProfile(userId);
-    if (!profile || !profile.embedding) {
+    if (!profile?.embedding) {
         throw new ProfileNotReadyError();
     }
 
