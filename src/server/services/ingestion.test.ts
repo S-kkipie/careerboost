@@ -9,9 +9,14 @@ import {
     existingMsgIdsForTest,
     getLastIngestionRun,
     recordIngestedMessage,
+    setJobEmbedding,
     toIsoDate,
     upsertJob,
 } from "@/server/services/ingestion";
+
+function fakeEmbedding(): number[] {
+    return Array.from({ length: 768 }, () => 0.01);
+}
 
 describe("buildJobEmbeddingText", () => {
     it("joins titulo, requisitos and skills, skipping empties", () => {
@@ -90,8 +95,11 @@ describe("upsertJob + recordIngestedMessage + getLastIngestionRun", () => {
             dedupeHash: "g-hash-a",
         });
         expect(first.isNew).toBe(true);
+        expect(first.needsEmbedding).toBe(true);
 
         // Same convocatoria (same dedupe_hash) from another inbox -> reuse.
+        // The first run never set an embedding, so it still needs one
+        // (self-heal: a prior failed embed is retried, not skipped forever).
         const second = await upsertJob({
             titulo: "Backend Dev",
             empresa: "Acme",
@@ -99,6 +107,17 @@ describe("upsertJob + recordIngestedMessage + getLastIngestionRun", () => {
         });
         expect(second.isNew).toBe(false);
         expect(second.jobId).toBe(first.jobId);
+        expect(second.needsEmbedding).toBe(true);
+
+        // Once embedded, a later upsert no longer asks for re-embedding.
+        await setJobEmbedding(first.jobId, fakeEmbedding());
+        const third = await upsertJob({
+            titulo: "Backend Dev",
+            empresa: "Acme",
+            dedupeHash: "g-hash-a",
+        });
+        expect(third.isNew).toBe(false);
+        expect(third.needsEmbedding).toBe(false);
 
         const rows = await db
             .select({ id: jobs.id })

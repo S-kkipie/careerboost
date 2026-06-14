@@ -1,5 +1,5 @@
 import { getLogger } from "@logtape/logtape";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { ServerConfig } from "@/config/server-config";
 import { classifyEmail } from "@/server/ai/classify-email";
 import { embedText } from "@/server/ai/embed";
@@ -60,13 +60,15 @@ export function buildJobEmbeddingText(input: {
         .join(" ");
 }
 
-// Upsert a job into the global pool keyed by dedupe_hash. Returns the job id and
-// whether it was newly inserted, so the caller embeds only brand-new
-// convocatorias (the cost/speed win). Race-safe: a losing concurrent insert
-// reads the winner's row back by dedupe_hash.
+// Upsert a job into the global pool keyed by dedupe_hash. Returns the job id,
+// whether it was newly inserted (for metrics), and whether the resolved row
+// still needs an embedding. The caller embeds whenever needsEmbedding is true,
+// so a row whose embedding failed on a previous run self-heals on the next.
+// Race-safe: a losing concurrent insert reads the winner's row back by
+// dedupe_hash.
 export async function upsertJob(
     row: Omit<typeof jobs.$inferInsert, "embedding">,
-): Promise<{ jobId: string; isNew: boolean }> {
+): Promise<{ jobId: string; isNew: boolean; needsEmbedding: boolean }> {
     const inserted = await db
         .insert(jobs)
         .values(row)
@@ -74,16 +76,23 @@ export async function upsertJob(
         .returning({ id: jobs.id });
     const fresh = inserted[0];
     if (fresh) {
-        return { jobId: fresh.id, isNew: true };
+        return { jobId: fresh.id, isNew: true, needsEmbedding: true };
     }
     const [existing] = await db
-        .select({ id: jobs.id })
+        .select({
+            id: jobs.id,
+            hasEmbedding: sql<boolean>`${jobs.embedding} is not null`,
+        })
         .from(jobs)
         .where(eq(jobs.dedupeHash, row.dedupeHash));
     if (!existing) {
         throw new Error("dedupe conflict but no existing job row found");
     }
-    return { jobId: existing.id, isNew: false };
+    return {
+        jobId: existing.id,
+        isNew: false,
+        needsEmbedding: !existing.hasEmbedding,
+    };
 }
 
 export async function setJobEmbedding(
@@ -144,8 +153,9 @@ async function existingMsgIds(
 // Exposed for tests; production code uses it internally via runIngestion.
 export const existingMsgIdsForTest = existingMsgIds;
 
-// Upsert one extracted convocatoria into the global pool, embed it only if new,
-// and link it to this user's inbox. Returns "new" | "existing".
+// Upsert one extracted convocatoria into the global pool, embed it whenever it
+// is missing an embedding (new row, or a prior run that failed to embed), and
+// link it to this user's inbox. Returns "new" | "existing".
 async function ingestOneJob(params: {
     userId: string;
     msg: ParsedGmailMessage;
@@ -160,7 +170,7 @@ async function ingestOneJob(params: {
         weekDate: deadline ?? toIsoDate(msg.date),
     });
 
-    const { jobId, isNew } = await upsertJob({
+    const { jobId, isNew, needsEmbedding } = await upsertJob({
         sourceSender: msg.sender,
         titulo: extracted.titulo,
         empresa: extracted.empresa,
@@ -179,7 +189,7 @@ async function ingestOneJob(params: {
         dedupeHash,
     });
 
-    if (isNew) {
+    if (needsEmbedding) {
         const embedding = await embedText(
             buildJobEmbeddingText({
                 titulo: extracted.titulo,
