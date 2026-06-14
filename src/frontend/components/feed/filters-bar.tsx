@@ -18,13 +18,17 @@ interface FiltersBarProps {
     onUbicacionChange: (value: string) => void;
 }
 
-const MODALIDADES = ["", "remoto", "presencial", "hibrido"] as const;
-const MODALIDAD_LABELS: Record<string, string> = {
-    "": "Todas",
-    remoto: "Remoto",
-    presencial: "Presencial",
-    hibrido: "Híbrido",
-};
+// Sentinel for the "all" option: radix forbids a <SelectItem value="">.
+// The parent contract uses "" for "all", so we map to/from ALL only inside
+// the Select and never expose the sentinel to the parent setters.
+const ALL = "todas";
+
+const MODALIDAD_OPTIONS = [
+    { value: ALL, label: "Todas" },
+    { value: "remoto", label: "Remoto" },
+    { value: "presencial", label: "Presencial" },
+    { value: "hibrido", label: "Híbrido" },
+] as const;
 
 export function FiltersBar({
     soloConSalario,
@@ -51,14 +55,17 @@ export function FiltersBar({
                 </label>
             </div>
 
-            <Select value={modalidad} onValueChange={onModalidadChange}>
+            <Select
+                value={modalidad === "" ? ALL : modalidad}
+                onValueChange={(v) => onModalidadChange(v === ALL ? "" : v)}
+            >
                 <SelectTrigger size="sm" className="w-36">
                     <SelectValue placeholder="Modalidad" />
                 </SelectTrigger>
                 <SelectContent>
-                    {MODALIDADES.map((m) => (
-                        <SelectItem key={m === "" ? "todas" : m} value={m}>
-                            {MODALIDAD_LABELS[m]}
+                    {MODALIDAD_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
                         </SelectItem>
                     ))}
                 </SelectContent>
