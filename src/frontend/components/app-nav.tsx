@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/frontend/auth/auth";
-import { Button, buttonClasses } from "@/frontend/components/ui/button";
+import { Button, buttonVariants } from "@/frontend/components/ui/button";
 
 export function AppNav() {
     const router = useRouter();
@@ -24,18 +24,30 @@ export function AppNav() {
                     CareerBoost
                 </Link>
                 <div className="flex items-center gap-1">
-                    <Link href="/feed" className={buttonClasses("ghost", "sm")}>
+                    <Link
+                        href="/feed"
+                        className={buttonVariants({
+                            variant: "ghost",
+                            size: "sm",
+                        })}
+                    >
                         Feed
                     </Link>
                     <Link
                         href="/digest"
-                        className={buttonClasses("ghost", "sm")}
+                        className={buttonVariants({
+                            variant: "ghost",
+                            size: "sm",
+                        })}
                     >
                         Digest
                     </Link>
                     <Link
                         href="/perfil"
-                        className={buttonClasses("ghost", "sm")}
+                        className={buttonVariants({
+                            variant: "ghost",
+                            size: "sm",
+                        })}
                     >
                         Perfil
                     </Link>

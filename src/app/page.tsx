@@ -38,7 +38,7 @@ export default function Home() {
                 Empleos que hacen match con tu perfil profesional. Sin ruido,
                 con claridad salarial, desde tu correo institucional.
             </p>
-            <Button size="md" onClick={handleLogin}>
+            <Button size="default" onClick={handleLogin}>
                 Continuar con Google
             </Button>
         </main>

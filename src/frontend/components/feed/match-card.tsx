@@ -1,5 +1,5 @@
 import { Badge } from "@/frontend/components/ui/badge";
-import { Button, buttonClasses } from "@/frontend/components/ui/button";
+import { Button, buttonVariants } from "@/frontend/components/ui/button";
 import { Spinner } from "@/frontend/components/ui/spinner";
 import {
     formatMatchPct,
@@ -84,7 +84,10 @@ export function MatchCard({
                         href={item.job.apply_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={buttonClasses("primary", "sm")}
+                        className={buttonVariants({
+                            variant: "default",
+                            size: "sm",
+                        })}
                     >
                         Postular
                     </a>
