@@ -9,7 +9,7 @@ const stats = [
     {
         value: "27%",
         label: "ruido eliminado de tu bandeja",
-        color: "text-primary",
+        color: "text-brand",
     },
     {
         value: "90%",
@@ -26,9 +26,11 @@ export function ImpactBand() {
                     {stats.map((stat) => (
                         <Card
                             key={stat.label}
-                            className="items-center justify-center p-8 text-center gap-2 hover:border-primary transition-colors"
+                            className="items-center justify-center p-8 text-center gap-2 hover:border-brand transition-colors"
                         >
-                            <div className={`text-4xl font-bold ${stat.color}`}>
+                            <div
+                                className={`font-serif text-4xl font-bold ${stat.color}`}
+                            >
                                 {stat.value}
                             </div>
                             <p className="text-sm font-medium text-muted-foreground">
