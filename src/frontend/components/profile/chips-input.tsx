@@ -42,7 +42,7 @@ export function ChipsInput({
                         // biome-ignore lint/suspicious/noArrayIndexKey: chips list is reordered only by add/remove, not sorting
                         key={`${chip}-${idx}`}
                         variant="secondary"
-                        className="gap-1"
+                        className="gap-1 border-brand/20 bg-brand/10 text-brand-strong"
                     >
                         {chip}
                         <button

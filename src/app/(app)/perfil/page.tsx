@@ -118,16 +118,28 @@ export default function PerfilPage() {
 
     return (
         <Tabs defaultValue="perfil" className="w-full gap-4">
-            <TabsList>
-                <TabsTrigger value="perfil">Perfil profesional</TabsTrigger>
-                <TabsTrigger value="cuenta">Cuenta</TabsTrigger>
+            <TabsList variant="line">
+                <TabsTrigger
+                    value="perfil"
+                    className="data-[state=active]:after:bg-brand data-[state=active]:text-foreground"
+                >
+                    Perfil profesional
+                </TabsTrigger>
+                <TabsTrigger
+                    value="cuenta"
+                    className="data-[state=active]:after:bg-brand data-[state=active]:text-foreground"
+                >
+                    Cuenta
+                </TabsTrigger>
             </TabsList>
 
             <TabsContent value="perfil" tabIndex={-1}>
                 <form onSubmit={onSubmit} className="flex flex-col gap-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Académico</CardTitle>
+                            <CardTitle className="font-serif">
+                                Académico
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1.5">
@@ -170,7 +182,9 @@ export default function PerfilPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Profesional</CardTitle>
+                            <CardTitle className="font-serif">
+                                Profesional
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1.5">
@@ -214,7 +228,9 @@ export default function PerfilPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Preferencias</CardTitle>
+                            <CardTitle className="font-serif">
+                                Preferencias
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1.5">
