@@ -1,0 +1,21 @@
+{
+  "name": "projects/12329140981897677948",
+  "projectId": "12329140981897677948",
+  "title": "CareerBoost — CONECTA UNSA",
+  "visibility": "PRIVATE",
+  "createTime": "2026-06-14T17:03:44.480028Z",
+  "updateTime": "2026-06-14T17:03:44.480028Z",
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designTheme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#2563EB"
+  },
+  "screens": {},
+  "metadata": {
+    "userRole": "OWNER"
+  }
+}
