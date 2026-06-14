@@ -208,6 +208,44 @@ export interface FeedItem {
     status: string;
 }
 
+export interface FeedRow {
+    id: string;
+    rerankScore: number | null;
+    explanation: string | null;
+    status: string;
+    titulo: string | null;
+    empresa: string | null;
+    modalidad: string | null;
+    ubicacion: string | null;
+    salarioMin: number | null;
+    salarioMax: number | null;
+    moneda: string | null;
+    salarioPeriodo: string | null;
+    salarioExplicito: boolean;
+    applyLink: string | null;
+}
+
+export function mapFeedRow(r: FeedRow): FeedItem {
+    return {
+        id: r.id,
+        rerank_score: r.rerankScore,
+        explanation: r.explanation,
+        job: {
+            titulo: r.titulo,
+            empresa: r.empresa,
+            modalidad: r.modalidad,
+            ubicacion: r.ubicacion,
+            salario_min: r.salarioMin,
+            salario_max: r.salarioMax,
+            moneda: r.moneda,
+            salario_periodo: r.salarioPeriodo,
+            salario_explicito: r.salarioExplicito,
+            apply_link: r.applyLink,
+        },
+        status: r.status,
+    };
+}
+
 // Server-side feed: above-threshold, non-dismissed matches for the user,
 // ordered by rerank_score desc, with optional salary/modalidad/ubicacion filters.
 export async function getFeed(
@@ -251,24 +289,7 @@ export async function getFeed(
         .where(and(...conditions))
         .orderBy(desc(matches.rerankScore));
 
-    return rows.map((r) => ({
-        id: r.id,
-        rerank_score: r.rerankScore,
-        explanation: r.explanation,
-        job: {
-            titulo: r.titulo,
-            empresa: r.empresa,
-            modalidad: r.modalidad,
-            ubicacion: r.ubicacion,
-            salario_min: r.salarioMin,
-            salario_max: r.salarioMax,
-            moneda: r.moneda,
-            salario_periodo: r.salarioPeriodo,
-            salario_explicito: r.salarioExplicito,
-            apply_link: r.applyLink,
-        },
-        status: r.status,
-    }));
+    return rows.map(mapFeedRow);
 }
 
 // Change a match's status. Scoped by user_id so a user cannot mutate another
