@@ -1,22 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/frontend/auth/auth";
-import { Button, buttonVariants } from "@/frontend/components/ui/button";
+import { UserButton } from "@/frontend/components/auth/user/user-button";
+import { ThemeToggle } from "@/frontend/components/theme-toggle";
+import { buttonVariants } from "@/frontend/components/ui/button";
 
 export function AppNav() {
-    const router = useRouter();
-
-    async function handleSignOut() {
-        try {
-            await authClient.signOut();
-        } catch {
-            // best-effort; redirect regardless of backend result
-        }
-        router.replace("/");
-    }
-
     return (
         <header className="border-b bg-card">
             <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
@@ -40,24 +29,16 @@ export function AppNav() {
                             size: "sm",
                         })}
                     >
-                        Digest
+                        Tu digest
                     </Link>
-                    <Link
-                        href="/perfil"
-                        className={buttonVariants({
-                            variant: "ghost",
-                            size: "sm",
-                        })}
-                    >
-                        Perfil
-                    </Link>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => void handleSignOut()}
-                    >
-                        Cerrar sesión
-                    </Button>
+                    <ThemeToggle />
+                    <UserButton
+                        size="icon"
+                        links={[
+                            { label: "Tu perfil", href: "/perfil" },
+                            { label: "Tu digest", href: "/digest" },
+                        ]}
+                    />
                 </div>
             </nav>
         </header>
