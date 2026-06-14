@@ -3,7 +3,7 @@
 // straight from a feed item.
 
 export interface SalaryBadgeInput {
-    salario_explicito: boolean | null;
+    salario_explicito: boolean;
     salario_min: number | null;
     salario_max: number | null;
     moneda: string | null;

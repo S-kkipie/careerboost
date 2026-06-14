@@ -71,6 +71,7 @@ describe("formatMatchPct", () => {
 describe("modalidadLabel", () => {
     it("maps known modalidades", () => {
         expect(modalidadLabel("remoto")).toBe("Remoto");
+        expect(modalidadLabel("presencial")).toBe("Presencial");
         expect(modalidadLabel("hibrido")).toBe("Híbrido");
     });
     it("falls back for null/unknown", () => {
