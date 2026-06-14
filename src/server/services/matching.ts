@@ -135,14 +135,15 @@ export async function retrieveCandidates(
     profileEmbedding: number[],
     profileUbicacion: string | null,
 ): Promise<Candidate[]> {
-    const today = new Date().toISOString().slice(0, 10);
     const distance = sql<number>`${cosineDistance(jobs.embedding, profileEmbedding)}`;
 
     const conditions = [
         eq(jobs.userId, userId),
         eq(jobs.isJob, true),
         isNotNull(jobs.embedding),
-        or(isNull(jobs.deadline), gte(jobs.deadline, today)),
+        // Vigencia uses Postgres CURRENT_DATE (DB session tz, UTC-5 for Peru)
+        // so a job expiring "today" local is not dropped in the evening.
+        or(isNull(jobs.deadline), gte(jobs.deadline, sql`CURRENT_DATE`)),
     ];
     const city = profileUbicacion?.trim();
     if (city) {

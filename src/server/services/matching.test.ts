@@ -205,6 +205,7 @@ import {
 } from "@/server/services/matching";
 
 const T3_USER = "spec05-retrieval-test-user";
+const T3_OTHER_USER = "spec05-other-user";
 
 // Distinct deterministic 768-dim vectors. vec(0) is the query target.
 function vec(seed: number): number[] {
@@ -226,7 +227,9 @@ function jobRow(overrides: Partial<typeof jobs.$inferInsert>) {
 
 describe("retrieveCandidates + persistMatches", () => {
     afterAll(async () => {
+        // Cascade deletes each user's jobs and matches too.
         await db.delete(user).where(eq(user.id, T3_USER));
+        await db.delete(user).where(eq(user.id, T3_OTHER_USER));
     });
 
     it("retrieves only this user's vigentes job rows ordered by cosine distance", async () => {
@@ -268,17 +271,41 @@ describe("retrieveCandidates + persistMatches", () => {
             }),
         ]);
 
+        // Another user's job (same vector) must never leak into this user's
+        // retrieval — per-user isolation.
+        await db.insert(user).values({
+            id: T3_OTHER_USER,
+            name: "Other User",
+            email: "spec05-other-user@example.com",
+            emailVerified: false,
+        });
+        await db.insert(jobs).values({
+            userId: T3_OTHER_USER,
+            gmailMsgId: "m-other",
+            dedupeHash: "h-other",
+            titulo: "otheruser",
+            isJob: true,
+            salarioExplicito: false,
+            embedding: vec(0),
+        });
+
         const candidates = await retrieveCandidates(T3_USER, vec(0), null);
         const titles = candidates.map((c) => c.titulo);
         expect(titles).toContain("near");
         expect(titles).toContain("far");
         expect(titles).not.toContain("noise");
         expect(titles).not.toContain("old");
+        // Cross-user leakage guard.
+        expect(titles).not.toContain("otheruser");
         // Nearest first.
-        expect(candidates[0]?.titulo).toBe("near");
-        expect(candidates[0]?.distance).toBeLessThan(
-            candidates[1]?.distance ?? 1,
-        );
+        expect(candidates.length).toBeGreaterThanOrEqual(2);
+        const [first, second] = candidates;
+        expect(first?.titulo).toBe("near");
+        expect(first).toBeDefined();
+        expect(second).toBeDefined();
+        if (first && second) {
+            expect(first.distance).toBeLessThan(second.distance);
+        }
     });
 
     it("upserts matches and preserves a saved/dismissed status across recalculation", async () => {
