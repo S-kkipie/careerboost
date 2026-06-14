@@ -55,7 +55,7 @@ export function MatchCard({
                         {item.job.titulo}
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                        {item.job.empresa} ·{" "}
+                        {item.job.empresa ? `${item.job.empresa} · ` : ""}
                         {modalidadLabel(item.job.modalidad)}
                         {ubicacionSuffix}
                     </p>
