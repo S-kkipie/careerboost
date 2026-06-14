@@ -7,6 +7,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { PropsWithChildren } from "react";
 import { authClient } from "@/frontend/auth/auth";
 import { ErrorBoundary } from "@/frontend/components/error-boundary";
+import { Toaster } from "@/frontend/components/ui/sonner";
 import { TooltipProvider } from "@/frontend/components/ui/tooltip";
 import { apiClient, EdenProvider } from "@/frontend/lib/eden";
 import { spanishLocalization } from "@/frontend/lib/localization";
@@ -32,6 +33,7 @@ export default function Providers({ children }: PropsWithChildren) {
                             queryClient={queryClient}
                         >
                             <TooltipProvider>
+                                <Toaster richColors position="top-center" />
                                 <AuthUIProvider
                                     authClient={authClient}
                                     redirectTo="/onboarding"
