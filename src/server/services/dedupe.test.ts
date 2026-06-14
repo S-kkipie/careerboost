@@ -83,4 +83,20 @@ describe("computeDedupeHash", () => {
         });
         expect(h).toHaveLength(64);
     });
+
+    it("collapses the same convocatoria across inboxes (same ISO week)", () => {
+        // Two users receive the broadcast on different days of the same week;
+        // with no deadline, the week-key fallback yields one identity.
+        const inboxA = computeDedupeHash({
+            titulo: "Analista de Datos",
+            empresa: "UNSA",
+            weekDate: "2026-06-08",
+        });
+        const inboxB = computeDedupeHash({
+            titulo: "Analista de Datos",
+            empresa: "UNSA",
+            weekDate: "2026-06-13",
+        });
+        expect(inboxA).toBe(inboxB);
+    });
 });

@@ -132,18 +132,15 @@ export function mergeRerank(
     });
 }
 
-// Semantic retrieval over the user's own jobs with hard filters. Per-user
-// isolation is enforced by the user_id predicate.
+// Semantic retrieval over the shared global pool with hard filters. Jobs are no
+// longer per-user — every user matches against the whole UNSA pool.
 export async function retrieveCandidates(
-    userId: string,
     profileEmbedding: number[],
     profileUbicacion: string | null,
 ): Promise<Candidate[]> {
     const distance = sql<number>`${cosineDistance(jobs.embedding, profileEmbedding)}`;
 
     const conditions = [
-        eq(jobs.userId, userId),
-        eq(jobs.isJob, true),
         isNotNull(jobs.embedding),
         // Vigencia uses Postgres CURRENT_DATE (DB session tz, UTC-5 for Peru)
         // so a job expiring "today" local is not dropped in the evening.
@@ -318,7 +315,6 @@ export async function runMatching(params: {
     }
 
     const candidates = await retrieveCandidates(
-        userId,
         profile.embedding,
         profile.ubicacion,
     );

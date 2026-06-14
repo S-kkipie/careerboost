@@ -193,7 +193,7 @@ describe("mergeRerank", () => {
     });
 });
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/server/drizzle/db";
 import { user } from "@/server/drizzle/schemas/auth-schema";
 import { jobs } from "@/server/drizzle/schemas/jobs";
@@ -209,7 +209,6 @@ import {
 } from "@/server/services/matching";
 
 const T3_USER = "spec05-retrieval-test-user";
-const T3_OTHER_USER = "spec05-other-user";
 
 // Distinct deterministic 768-dim vectors. vec(0) is the query target.
 function vec(seed: number): number[] {
@@ -218,11 +217,8 @@ function vec(seed: number): number[] {
 
 function jobRow(overrides: Partial<typeof jobs.$inferInsert>) {
     return {
-        userId: T3_USER,
-        gmailMsgId: `m-${overrides.dedupeHash ?? "x"}`,
         dedupeHash: `h-${overrides.titulo ?? "x"}`,
         titulo: "Job",
-        isJob: true,
         salarioExplicito: false,
         embedding: vec(0),
         ...overrides,
@@ -230,13 +226,15 @@ function jobRow(overrides: Partial<typeof jobs.$inferInsert>) {
 }
 
 describe("retrieveCandidates + persistMatches", () => {
+    const HASHES = ["near", "far", "old", "otherpool"];
+
     afterAll(async () => {
-        // Cascade deletes each user's jobs and matches too.
         await db.delete(user).where(eq(user.id, T3_USER));
-        await db.delete(user).where(eq(user.id, T3_OTHER_USER));
+        // Global pool: delete the test jobs explicitly (no user cascade).
+        await db.delete(jobs).where(inArray(jobs.dedupeHash, HASHES));
     });
 
-    it("retrieves only this user's vigentes job rows ordered by cosine distance", async () => {
+    it("retrieves vigentes jobs from the whole pool ordered by cosine distance", async () => {
         await db.insert(user).values({
             id: T3_USER,
             name: "Retrieval Test",
@@ -245,70 +243,37 @@ describe("retrieveCandidates + persistMatches", () => {
         });
 
         await db.insert(jobs).values([
-            jobRow({
-                gmailMsgId: "m-near",
-                dedupeHash: "near",
-                titulo: "near",
-                embedding: vec(0),
-            }),
-            jobRow({
-                gmailMsgId: "m-far",
-                dedupeHash: "far",
-                titulo: "far",
-                embedding: vec(5),
-            }),
-            // Noise (is_job false) must be excluded.
-            jobRow({
-                gmailMsgId: "m-noise",
-                dedupeHash: "noise",
-                titulo: "noise",
-                isJob: false,
-                embedding: vec(0),
-            }),
+            jobRow({ dedupeHash: "near", titulo: "near", embedding: vec(0) }),
+            jobRow({ dedupeHash: "far", titulo: "far", embedding: vec(5) }),
             // Expired deadline must be excluded.
             jobRow({
-                gmailMsgId: "m-old",
                 dedupeHash: "old",
                 titulo: "old",
                 deadline: "2000-01-01",
                 embedding: vec(0),
             }),
+            // A job ingested via another user's inbox is now part of the shared
+            // pool and MUST be retrievable (global pool, no per-user isolation).
+            jobRow({
+                dedupeHash: "otherpool",
+                titulo: "otherpool",
+                embedding: vec(0),
+            }),
         ]);
 
-        // Another user's job (same vector) must never leak into this user's
-        // retrieval — per-user isolation.
-        await db.insert(user).values({
-            id: T3_OTHER_USER,
-            name: "Other User",
-            email: "spec05-other-user@example.com",
-            emailVerified: false,
-        });
-        await db.insert(jobs).values({
-            userId: T3_OTHER_USER,
-            gmailMsgId: "m-other",
-            dedupeHash: "h-other",
-            titulo: "otheruser",
-            isJob: true,
-            salarioExplicito: false,
-            embedding: vec(0),
-        });
-
-        const candidates = await retrieveCandidates(T3_USER, vec(0), null);
+        const candidates = await retrieveCandidates(vec(0), null);
         const titles = candidates.map((c) => c.titulo);
         expect(titles).toContain("near");
         expect(titles).toContain("far");
-        expect(titles).not.toContain("noise");
+        expect(titles).toContain("otherpool");
         expect(titles).not.toContain("old");
-        // Cross-user leakage guard.
-        expect(titles).not.toContain("otheruser");
         // Nearest first.
         expect(candidates.length).toBeGreaterThanOrEqual(2);
         const [first, second] = candidates;
-        expect(first?.titulo).toBe("near");
         expect(first).toBeDefined();
         expect(second).toBeDefined();
         if (first && second) {
-            expect(first.distance).toBeLessThan(second.distance);
+            expect(first.distance).toBeLessThanOrEqual(second.distance);
         }
     });
 
@@ -316,7 +281,7 @@ describe("retrieveCandidates + persistMatches", () => {
         const [job] = await db
             .select({ id: jobs.id })
             .from(jobs)
-            .where(and(eq(jobs.userId, T3_USER), eq(jobs.titulo, "near")));
+            .where(eq(jobs.dedupeHash, "near"));
         const jobId = job?.id ?? "";
 
         const first: ScoredMatch[] = [
@@ -331,13 +296,11 @@ describe("retrieveCandidates + persistMatches", () => {
         const inserted = await persistMatches(T3_USER, first);
         expect(inserted).toBe(1);
 
-        // User saves it.
         await db
             .update(matches)
             .set({ status: "saved" })
             .where(and(eq(matches.userId, T3_USER), eq(matches.jobId, jobId)));
 
-        // Recalculate with new scores.
         const second: ScoredMatch[] = [
             {
                 jobId,
@@ -356,7 +319,6 @@ describe("retrieveCandidates + persistMatches", () => {
         expect(rows).toHaveLength(1);
         expect(rows[0]?.rerankScore).toBe(95);
         expect(rows[0]?.explanation).toBe("v2");
-        // Status preserved.
         expect(rows[0]?.status).toBe("saved");
     });
 });
@@ -364,8 +326,11 @@ describe("retrieveCandidates + persistMatches", () => {
 const T4_USER = "spec05-feed-test-user";
 
 describe("getFeed + setMatchStatus", () => {
+    const HASHES = ["f-high", "f-mid", "f-low"];
+
     afterAll(async () => {
         await db.delete(user).where(eq(user.id, T4_USER));
+        await db.delete(jobs).where(inArray(jobs.dedupeHash, HASHES));
     });
 
     it("returns only above-threshold, non-dismissed matches ordered by rerank_score, and applies filters", async () => {
@@ -376,13 +341,10 @@ describe("getFeed + setMatchStatus", () => {
             emailVerified: false,
         });
 
-        // Three jobs: high (with salary), mid (no salary), low (below threshold).
         const inserted = await db
             .insert(jobs)
             .values([
                 {
-                    userId: T4_USER,
-                    gmailMsgId: "f-high",
                     dedupeHash: "f-high",
                     titulo: "High",
                     modalidad: "remoto",
@@ -391,8 +353,6 @@ describe("getFeed + setMatchStatus", () => {
                     embedding: vec(0),
                 },
                 {
-                    userId: T4_USER,
-                    gmailMsgId: "f-mid",
                     dedupeHash: "f-mid",
                     titulo: "Mid",
                     modalidad: "presencial",
@@ -401,8 +361,6 @@ describe("getFeed + setMatchStatus", () => {
                     embedding: vec(1),
                 },
                 {
-                    userId: T4_USER,
-                    gmailMsgId: "f-low",
                     dedupeHash: "f-low",
                     titulo: "Low",
                     modalidad: "remoto",
@@ -440,28 +398,24 @@ describe("getFeed + setMatchStatus", () => {
             },
         ]);
 
-        // No filters: High (90) and Mid (70) pass threshold (>=50); Low (20) hidden.
         const all = await getFeed(T4_USER, {});
         expect(all.map((m) => m.job.titulo)).toEqual(["High", "Mid"]);
         expect(all[0]?.rerank_score).toBe(90);
         expect(all[0]?.job.salario_explicito).toBe(true);
 
-        // solo_con_salario: only jobs with explicit salary above threshold -> High.
         const salaried = await getFeed(T4_USER, { soloConSalario: true });
         expect(salaried.map((m) => m.job.titulo)).toEqual(["High"]);
 
-        // modalidad filter.
         const remoto = await getFeed(T4_USER, { modalidad: "remoto" });
         expect(remoto.map((m) => m.job.titulo)).toEqual(["High"]);
 
-        // ubicacion filter (substring, case-insensitive).
         const lima = await getFeed(T4_USER, { ubicacion: "lima" });
         expect(lima.map((m) => m.job.titulo)).toEqual(["Mid"]);
     });
 
     it("sets a match status scoped to the user and hides dismissed from the feed", async () => {
         const [high] = await db
-            .select({ id: matches.id, jobTitulo: jobs.titulo })
+            .select({ id: matches.id })
             .from(matches)
             .innerJoin(jobs, eq(matches.jobId, jobs.id))
             .where(and(eq(matches.userId, T4_USER), eq(jobs.titulo, "High")));
@@ -470,7 +424,6 @@ describe("getFeed + setMatchStatus", () => {
         const updated = await setMatchStatus(T4_USER, matchId, "dismissed");
         expect(updated?.status).toBe("dismissed");
 
-        // Dismissed disappears from the feed; Mid remains.
         const feed = await getFeed(T4_USER, {});
         expect(feed.map((m) => m.job.titulo)).toEqual(["Mid"]);
     });

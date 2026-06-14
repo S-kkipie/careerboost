@@ -250,8 +250,6 @@ async function main(): Promise<void> {
         const result = await db
             .insert(jobs)
             .values({
-                userId,
-                gmailMsgId: `demo-${i + 1}`,
                 sourceSender: "demo@careerboost.local",
                 titulo: j.titulo,
                 empresa: j.empresa,
@@ -265,7 +263,6 @@ async function main(): Promise<void> {
                 requisitos: j.requisitos,
                 skills: j.skills,
                 applyLink: j.applyLink,
-                isJob: true,
                 dedupeHash: computeDedupeHash({
                     titulo: j.titulo,
                     empresa: j.empresa,

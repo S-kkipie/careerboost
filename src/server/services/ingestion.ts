@@ -5,6 +5,7 @@ import { classifyEmail } from "@/server/ai/classify-email";
 import { embedText } from "@/server/ai/embed";
 import { type ExtractedJob, extractJob } from "@/server/ai/extract-job";
 import { db } from "@/server/drizzle/db";
+import { ingestedMessages } from "@/server/drizzle/schemas/ingested-messages";
 import {
     type IngestionRun,
     ingestionRuns,
@@ -59,17 +60,53 @@ export function buildJobEmbeddingText(input: {
         .join(" ");
 }
 
-// Insert a job; returns true if a new row landed, false on a unique conflict
-// (either gmail_msg_id or dedupe_hash already present for this user).
-export async function persistJob(
-    row: typeof jobs.$inferInsert,
-): Promise<boolean> {
+// Upsert a job into the global pool keyed by dedupe_hash. Returns the job id and
+// whether it was newly inserted, so the caller embeds only brand-new
+// convocatorias (the cost/speed win). Race-safe: a losing concurrent insert
+// reads the winner's row back by dedupe_hash.
+export async function upsertJob(
+    row: Omit<typeof jobs.$inferInsert, "embedding">,
+): Promise<{ jobId: string; isNew: boolean }> {
     const inserted = await db
         .insert(jobs)
         .values(row)
-        .onConflictDoNothing()
+        .onConflictDoNothing({ target: jobs.dedupeHash })
         .returning({ id: jobs.id });
-    return inserted.length > 0;
+    const fresh = inserted[0];
+    if (fresh) {
+        return { jobId: fresh.id, isNew: true };
+    }
+    const [existing] = await db
+        .select({ id: jobs.id })
+        .from(jobs)
+        .where(eq(jobs.dedupeHash, row.dedupeHash));
+    if (!existing) {
+        throw new Error("dedupe conflict but no existing job row found");
+    }
+    return { jobId: existing.id, isNew: false };
+}
+
+export async function setJobEmbedding(
+    jobId: string,
+    embedding: number[],
+): Promise<void> {
+    await db.update(jobs).set({ embedding }).where(eq(jobs.id, jobId));
+}
+
+// Record that a user's Gmail message was processed (idempotent per user+msg).
+// jobId is null when the email was classified as noise.
+export async function recordIngestedMessage(row: {
+    userId: string;
+    gmailMsgId: string;
+    jobId: string | null;
+    noiseReason: string | null;
+}): Promise<void> {
+    await db
+        .insert(ingestedMessages)
+        .values(row)
+        .onConflictDoNothing({
+            target: [ingestedMessages.userId, ingestedMessages.gmailMsgId],
+        });
 }
 
 export async function getLastIngestionRun(
@@ -84,6 +121,7 @@ export async function getLastIngestionRun(
     return rows[0] ?? null;
 }
 
+// Gmail message ids this user has already processed (job or noise).
 async function existingMsgIds(
     userId: string,
     ids: string[],
@@ -92,19 +130,27 @@ async function existingMsgIds(
         return new Set();
     }
     const rows = await db
-        .select({ gmailMsgId: jobs.gmailMsgId })
-        .from(jobs)
-        .where(and(eq(jobs.userId, userId), inArray(jobs.gmailMsgId, ids)));
+        .select({ gmailMsgId: ingestedMessages.gmailMsgId })
+        .from(ingestedMessages)
+        .where(
+            and(
+                eq(ingestedMessages.userId, userId),
+                inArray(ingestedMessages.gmailMsgId, ids),
+            ),
+        );
     return new Set(rows.map((r) => r.gmailMsgId));
 }
 
-// Build the job row for one extracted message and persist it.
-// Returns true if inserted, false if it deduped away.
+// Exposed for tests; production code uses it internally via runIngestion.
+export const existingMsgIdsForTest = existingMsgIds;
+
+// Upsert one extracted convocatoria into the global pool, embed it only if new,
+// and link it to this user's inbox. Returns "new" | "existing".
 async function ingestOneJob(params: {
     userId: string;
     msg: ParsedGmailMessage;
     extracted: ExtractedJob;
-}): Promise<boolean> {
+}): Promise<"new" | "existing"> {
     const { userId, msg, extracted } = params;
     const salary = normalizeSalary(extracted.salario, msg.text);
     const deadline = coerceIsoDate(extracted.deadline);
@@ -113,16 +159,8 @@ async function ingestOneJob(params: {
         empresa: extracted.empresa,
         weekDate: deadline ?? toIsoDate(msg.date),
     });
-    const embedding = await embedText(
-        buildJobEmbeddingText({
-            titulo: extracted.titulo,
-            requisitos: extracted.requisitos,
-            skills: extracted.skills,
-        }),
-    );
-    return persistJob({
-        userId,
-        gmailMsgId: msg.id,
+
+    const { jobId, isNew } = await upsertJob({
         sourceSender: msg.sender,
         titulo: extracted.titulo,
         empresa: extracted.empresa,
@@ -138,11 +176,27 @@ async function ingestOneJob(params: {
         deadline,
         applyLink: extracted.apply_link,
         rawEmail: msg.text.slice(0, RAW_EMAIL_MAX_CHARS),
-        isJob: true,
-        noiseReason: null,
         dedupeHash,
-        embedding,
     });
+
+    if (isNew) {
+        const embedding = await embedText(
+            buildJobEmbeddingText({
+                titulo: extracted.titulo,
+                requisitos: extracted.requisitos,
+                skills: extracted.skills,
+            }),
+        );
+        await setJobEmbedding(jobId, embedding);
+    }
+
+    await recordIngestedMessage({
+        userId,
+        gmailMsgId: msg.id,
+        jobId,
+        noiseReason: null,
+    });
+    return isNew ? "new" : "existing";
 }
 
 // --- Orchestrator (calls Gmail + Gemini; verified manually) ---
@@ -181,18 +235,27 @@ export async function runIngestion(params: {
                     continue;
                 }
                 // Counts examined messages; a mid-message Gemini failure (caught
-                // below) leaves this scanned but in none of the 3 outcome buckets.
+                // below) leaves this scanned but in none of the outcome buckets,
+                // and unrecorded, so it is retried on the next run.
                 metrics.emailsScanned++;
                 const classified = await classifyEmail(msg.text);
                 if (!classified.is_job) {
                     metrics.noiseFiltered++;
+                    await recordIngestedMessage({
+                        userId,
+                        gmailMsgId: id,
+                        jobId: null,
+                        noiseReason: classified.noise_reason,
+                    });
                     continue;
                 }
                 const extracted = await extractJob(msg.text);
-                const inserted = await ingestOneJob({ userId, msg, extracted });
-                if (inserted) {
+                const outcome = await ingestOneJob({ userId, msg, extracted });
+                if (outcome === "new") {
+                    // Globally-new convocatoria this run contributed to the pool.
                     metrics.jobsFound++;
                 } else {
+                    // Convocatoria already in the pool (this or another user).
                     metrics.dupesRemoved++;
                 }
             } catch (err) {
