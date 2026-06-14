@@ -36,12 +36,7 @@ export default function Providers({ children }: PropsWithChildren) {
     const router = useRouter();
 
     return (
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" disableTransitionOnChange>
             <ErrorBoundary>
                 <NuqsAdapter>
                     <QueryClientProvider client={queryClient}>
