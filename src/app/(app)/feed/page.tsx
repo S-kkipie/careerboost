@@ -58,7 +58,7 @@ function FeedInner() {
                         variant="icon"
                         className="bg-brand/10 text-brand"
                     >
-                        <SearchX />
+                        <SearchX aria-hidden="true" />
                     </EmptyMedia>
                     <EmptyTitle className="font-serif">
                         Sin vacantes que coincidan
