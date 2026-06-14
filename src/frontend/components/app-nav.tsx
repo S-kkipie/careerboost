@@ -28,6 +28,12 @@ export function AppNav() {
                         Feed
                     </Link>
                     <Link
+                        href="/digest"
+                        className={buttonClasses("ghost", "sm")}
+                    >
+                        Digest
+                    </Link>
+                    <Link
                         href="/perfil"
                         className={buttonClasses("ghost", "sm")}
                     >
