@@ -67,11 +67,23 @@ describe("summarizeSalary", () => {
         ).toBe("PEN 2000-3000 mes");
     });
 
-    it("formats a single amount when max is null or equals min", () => {
+    it("formats a single amount when max is null", () => {
         expect(
             summarizeSalary({
                 salarioMin: 2500,
                 salarioMax: null,
+                moneda: "USD",
+                salarioPeriodo: "mes",
+                salarioExplicito: true,
+            }),
+        ).toBe("USD 2500 mes");
+    });
+
+    it("formats a single amount when max equals min", () => {
+        expect(
+            summarizeSalary({
+                salarioMin: 2500,
+                salarioMax: 2500,
                 moneda: "USD",
                 salarioPeriodo: "mes",
                 salarioExplicito: true,
@@ -140,6 +152,20 @@ describe("mergeRerank", () => {
         expect(m1?.rerankScore).toBe(100);
         expect(m1?.explanation).toBe("Encaja con tu experiencia.");
         expect(m1?.flags.skills_match).toBe(true);
+    });
+
+    it("rounds a float match_score from the LLM", () => {
+        const llm: RerankItem[] = [
+            {
+                job_id: "job-1",
+                match_score: 87.6,
+                explanation: "Encaja con tu experiencia.",
+                flags: { skills_match: true, salario_transparente: true },
+            },
+        ];
+        const merged = mergeRerank(scored, llm);
+        const m1 = merged.find((m) => m.jobId === "job-1");
+        expect(m1?.rerankScore).toBe(88);
     });
 
     it("falls back deterministically for candidates the LLM omitted", () => {
