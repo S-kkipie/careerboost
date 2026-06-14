@@ -64,8 +64,8 @@ export async function getGmailProfile(
     return (await res.json()) as GmailProfile;
 }
 
-export const DEFAULT_BOLSA_SENDERS = ["bolsadetrabajo@unsa.edu.pe"];
-export const INGEST_NEWER_THAN_DAYS = 90;
+export const DEFAULT_BOLSA_SENDERS = ["udeeg_convocatorias@unsa.edu.pe"];
+export const INGEST_NEWER_THAN_DAYS = 30;
 export const INGEST_MAX_MESSAGES = 50;
 
 export interface ParsedGmailMessage {
