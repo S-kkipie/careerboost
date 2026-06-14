@@ -77,12 +77,8 @@ function OnboardingFlow() {
 
     // Derive step states for the progress indicator
     const step1State = gmailConnected ? "completed" : "active";
-    const step2State = gmailConnected
-        ? hasProfile
-            ? "completed"
-            : "active"
-        : "upcoming";
-    const step3State = gmailConnected && hasProfile ? "active" : "upcoming";
+    const step2State = hasProfile ? "completed" : "active";
+    const step3State = gmailConnected || hasProfile ? "active" : "upcoming";
 
     return (
         <main className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-12">

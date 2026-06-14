@@ -25,8 +25,7 @@ export function StepCard({
             className={cn(
                 "transition-all",
                 state === "active" && "border-2 border-primary shadow-md",
-                state === "upcoming" &&
-                    "opacity-60 grayscale pointer-events-none",
+                state === "upcoming" && "opacity-60 grayscale",
             )}
         >
             <CardContent className="pt-6 flex flex-col gap-4">
