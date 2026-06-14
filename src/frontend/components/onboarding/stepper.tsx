@@ -27,9 +27,9 @@ export function Stepper({ steps }: StepperProps) {
                         className={cn(
                             "w-10 h-10 rounded-full flex items-center justify-center border-4 border-background shadow-sm",
                             step.state === "completed" &&
-                                "bg-primary text-primary-foreground",
+                                "bg-success text-success-foreground",
                             step.state === "active" &&
-                                "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2",
+                                "bg-brand text-brand-foreground ring-2 ring-brand ring-offset-2 ring-offset-background",
                             step.state === "upcoming" &&
                                 "bg-muted text-muted-foreground",
                         )}
@@ -42,8 +42,8 @@ export function Stepper({ steps }: StepperProps) {
                     </div>
                     <span
                         className={cn(
-                            "text-xs font-semibold tracking-wide mt-2",
-                            step.state === "completed" && "text-primary",
+                            "font-serif text-xs font-semibold tracking-wide mt-2",
+                            step.state === "completed" && "text-success",
                             step.state === "active" && "text-foreground",
                             step.state === "upcoming" &&
                                 "text-muted-foreground",

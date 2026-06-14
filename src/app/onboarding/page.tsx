@@ -84,7 +84,7 @@ function OnboardingFlow() {
         <main className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-12">
             {/* Header + progress indicator */}
             <div className="text-center space-y-6">
-                <h1 className="font-bold text-2xl text-foreground">
+                <h1 className="font-serif font-bold text-2xl text-foreground">
                     Configura tu cuenta
                 </h1>
                 <Stepper
@@ -138,7 +138,7 @@ function OnboardingFlow() {
                                 "flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border p-8 transition-colors",
                                 uploadCv.isPending
                                     ? "cursor-not-allowed opacity-60"
-                                    : "cursor-pointer hover:border-primary hover:bg-primary/5",
+                                    : "cursor-pointer hover:border-brand hover:bg-brand/5",
                             )}
                         >
                             <input

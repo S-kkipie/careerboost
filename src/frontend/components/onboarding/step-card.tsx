@@ -24,7 +24,7 @@ export function StepCard({
         <Card
             className={cn(
                 "transition-all",
-                state === "active" && "border-2 border-primary shadow-md",
+                state === "active" && "border-2 border-brand shadow-md",
                 state === "upcoming" && "opacity-60 grayscale",
             )}
         >
@@ -35,7 +35,7 @@ export function StepCard({
                             "p-3 rounded-lg shrink-0",
                             state === "completed" &&
                                 "bg-success/10 text-success",
-                            state === "active" && "bg-primary/10 text-primary",
+                            state === "active" && "bg-brand/10 text-brand",
                             state === "upcoming" &&
                                 "bg-muted text-muted-foreground",
                         )}
