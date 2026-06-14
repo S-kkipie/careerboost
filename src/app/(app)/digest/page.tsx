@@ -1,9 +1,17 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { CalendarCheck, CheckCircle2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { MatchCard } from "@/frontend/components/feed/match-card";
 import { Button } from "@/frontend/components/ui/button";
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from "@/frontend/components/ui/empty";
+import { Kicker } from "@/frontend/components/ui/kicker";
 import { Skeleton } from "@/frontend/components/ui/skeleton";
 import {
     useDigest,
@@ -28,9 +36,20 @@ export default function DigestPage() {
         );
     } else if (matches.length === 0) {
         body = (
-            <p className="text-muted-foreground text-sm">
-                Estás al día. No hay nuevas oportunidades por ahora.
-            </p>
+            <Empty>
+                <EmptyHeader>
+                    <EmptyMedia
+                        variant="icon"
+                        className="bg-brand/10 text-brand"
+                    >
+                        <CalendarCheck aria-hidden="true" />
+                    </EmptyMedia>
+                    <EmptyTitle className="font-serif">Estás al día</EmptyTitle>
+                    <EmptyDescription>
+                        No hay nuevas oportunidades por ahora. Te avisaremos.
+                    </EmptyDescription>
+                </EmptyHeader>
+            </Empty>
         );
     } else {
         body = (
@@ -58,10 +77,11 @@ export default function DigestPage() {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h1 className="font-bold text-foreground text-2xl">
+                <Kicker>Resumen diario</Kicker>
+                <h1 className="font-serif font-bold text-foreground text-2xl">
                     Tu digest
                 </h1>
-                <p className="mt-1 font-medium text-primary text-sm">
+                <p className="mt-1 font-medium text-brand-strong text-sm">
                     Tus mejores oportunidades de hoy
                 </p>
                 <p className="mt-1 text-muted-foreground text-sm">

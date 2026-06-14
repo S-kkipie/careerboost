@@ -6,7 +6,7 @@ export function CtaBand() {
     return (
         <section className="bg-primary text-primary-foreground py-16 px-5 md:px-12">
             <div className="mx-auto max-w-[1100px] space-y-4 text-center">
-                <h2 className="text-3xl font-semibold">
+                <h2 className="font-serif text-3xl font-semibold">
                     ¿Listo para impulsar tu carrera?
                 </h2>
                 <p className="mx-auto max-w-2xl text-lg text-primary-foreground/80">

@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { FileText, Mail, Sparkles } from "lucide-react";
+import { SectionHeading } from "@/frontend/components/ui/section-heading";
 
 interface Step {
     icon: LucideIcon;
@@ -32,12 +33,11 @@ export function HowItWorks() {
     return (
         <section className="py-16 px-5 md:px-12">
             <div className="mx-auto max-w-[1100px]">
-                <div className="mb-12 text-center">
-                    <h2 className="text-3xl font-semibold text-foreground">
-                        Cómo funciona
-                    </h2>
-                    <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-primary" />
-                </div>
+                <SectionHeading
+                    kicker="En 3 pasos"
+                    title="Cómo funciona"
+                    className="mb-12"
+                />
 
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
                     {steps.map((step) => {
@@ -47,10 +47,13 @@ export function HowItWorks() {
                                 key={step.title}
                                 className="flex flex-col items-center space-y-4 text-center"
                             >
-                                <div className="flex size-16 items-center justify-center rounded-full border border-primary/20 bg-primary/10">
-                                    <Icon className="size-8 text-primary" />
+                                <div className="flex size-16 items-center justify-center rounded-full border border-brand/20 bg-brand/10">
+                                    <Icon
+                                        className="size-8 text-brand"
+                                        aria-hidden="true"
+                                    />
                                 </div>
-                                <h3 className="text-lg font-semibold text-foreground">
+                                <h3 className="font-serif text-lg font-semibold text-foreground">
                                     {step.title}
                                 </h3>
                                 <p className="text-sm text-muted-foreground">

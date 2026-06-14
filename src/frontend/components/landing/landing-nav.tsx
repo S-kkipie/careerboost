@@ -6,7 +6,9 @@ import { cn } from "@/frontend/lib/utils";
 export function LandingNav() {
     return (
         <nav className="fixed top-0 left-0 z-50 w-full flex items-center justify-between border-b border-border bg-background/90 backdrop-blur-md px-5 md:px-12 h-16">
-            <span className="text-xl font-bold text-primary">CareerBoost</span>
+            <span className="font-serif text-xl font-bold text-foreground">
+                Career<span className="text-brand">Boost</span>
+            </span>
             <div className="flex items-center gap-3">
                 <ThemeToggle />
                 <Link

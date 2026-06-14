@@ -1,10 +1,18 @@
 "use client";
 
+import { SearchX } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { type ReactNode, Suspense } from "react";
 import { FiltersBar } from "@/frontend/components/feed/filters-bar";
 import { ImpactPanel } from "@/frontend/components/feed/impact-panel";
 import { MatchCard } from "@/frontend/components/feed/match-card";
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from "@/frontend/components/ui/empty";
 import { Skeleton } from "@/frontend/components/ui/skeleton";
 import {
     useFeed,
@@ -44,10 +52,22 @@ function FeedInner() {
         );
     } else if (matches.length === 0) {
         feedSection = (
-            <p className="text-muted-foreground text-sm">
-                No hay vacantes que coincidan. Ajusta los filtros o sincroniza
-                de nuevo.
-            </p>
+            <Empty>
+                <EmptyHeader>
+                    <EmptyMedia
+                        variant="icon"
+                        className="bg-brand/10 text-brand"
+                    >
+                        <SearchX aria-hidden="true" />
+                    </EmptyMedia>
+                    <EmptyTitle className="font-serif">
+                        Sin vacantes que coincidan
+                    </EmptyTitle>
+                    <EmptyDescription>
+                        Ajusta los filtros o sincroniza tus correos de nuevo.
+                    </EmptyDescription>
+                </EmptyHeader>
+            </Empty>
         );
     } else {
         feedSection = (

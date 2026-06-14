@@ -4,6 +4,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/frontend/components/ui/card";
+import { Kicker } from "@/frontend/components/ui/kicker";
 import { Skeleton } from "@/frontend/components/ui/skeleton";
 import { buildImpactStats, type ImpactRun } from "@/frontend/lib/format";
 
@@ -29,13 +30,16 @@ export function ImpactPanel({ run, isLoading }: ImpactPanelProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Impacto de tu perfil</CardTitle>
+                <Kicker>Tu impacto</Kicker>
+                <CardTitle className="font-serif">
+                    Impacto de tu perfil
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     {stats.map((stat) => (
                         <div key={stat.label} className="text-center">
-                            <p className="font-bold text-2xl text-primary">
+                            <p className="font-serif font-bold text-2xl text-primary">
                                 {stat.value}
                             </p>
                             <p className="mt-0.5 text-muted-foreground text-xs">

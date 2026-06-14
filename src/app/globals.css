@@ -5,6 +5,8 @@
     --color-foreground: var(--foreground);
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
@@ -19,61 +21,76 @@
     --color-success-foreground: var(--success-foreground);
     --color-warning: var(--warning);
     --color-warning-foreground: var(--warning-foreground);
+    --color-brand: var(--brand);
+    --color-brand-foreground: var(--brand-foreground);
+    --color-brand-strong: var(--brand-strong);
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
+    --font-sans: var(--font-inter);
+    --font-serif: var(--font-fraunces);
 }
 
 :root {
     --radius: 0.625rem;
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --background: oklch(0.98 0.01 87.5);
+    --foreground: oklch(0.268 0.031 252.8);
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.55 0.18 255);
+    --card-foreground: oklch(0.268 0.031 252.8);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.268 0.031 252.8);
+    --primary: oklch(0.345 0.051 250.5);
     --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.937 0.019 80.1);
+    --secondary-foreground: oklch(0.345 0.051 250.5);
+    --muted: oklch(0.939 0.027 85.7);
+    --muted-foreground: oklch(0.488 0.028 67.1);
+    --accent: oklch(0.937 0.019 80.1);
+    --accent-foreground: oklch(0.345 0.051 250.5);
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.985 0 0);
-    --success: oklch(0.6 0.17 150);
+    --success: oklch(0.627 0.17 149.2);
     --success-foreground: oklch(0.985 0 0);
     --warning: oklch(0.75 0.16 80);
     --warning-foreground: oklch(0.205 0 0);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    --brand: oklch(0.609 0.125 72.6);
+    --brand-foreground: oklch(0.985 0 0);
+    --brand-strong: oklch(0.509 0.103 70.8);
+    --border: oklch(0.906 0.033 85.5);
+    --input: oklch(0.906 0.033 85.5);
+    --ring: oklch(0.345 0.051 250.5);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.62 0.19 255);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: oklch(0.192 0.01 88.8);
+    --foreground: oklch(0.956 0.018 86.1);
+    --card: oklch(0.236 0.014 87.6);
+    --card-foreground: oklch(0.956 0.018 86.1);
+    --popover: oklch(0.236 0.014 87.6);
+    --popover-foreground: oklch(0.956 0.018 86.1);
+    --primary: oklch(0.605 0.086 255.2);
+    --primary-foreground: oklch(0.192 0.01 88.8);
+    --secondary: oklch(0.27 0.017 86.9);
+    --secondary-foreground: oklch(0.956 0.018 86.1);
+    --muted: oklch(0.27 0.017 86.9);
+    --muted-foreground: oklch(0.735 0.032 83.6);
+    --accent: oklch(0.27 0.017 86.9);
+    --accent-foreground: oklch(0.956 0.018 86.1);
     --destructive: oklch(0.704 0.191 22.216);
     --destructive-foreground: oklch(0.985 0 0);
-    --success: oklch(0.65 0.17 150);
-    --success-foreground: oklch(0.205 0 0);
+    --success: oklch(0.723 0.192 149.6);
+    --success-foreground: oklch(0.192 0.01 88.8);
     --warning: oklch(0.78 0.16 80);
     --warning-foreground: oklch(0.985 0 0);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --brand: oklch(0.76 0.137 78.4);
+    --brand-foreground: oklch(0.192 0.01 88.8);
+    --brand-strong: oklch(0.76 0.137 78.4);
+    --border: oklch(0.328 0.019 80.5);
+    --input: oklch(0.328 0.019 80.5);
+    --ring: oklch(0.605 0.086 255.2);
 }
 
 * {
@@ -82,4 +99,31 @@
 body {
     background-color: var(--background);
     color: var(--foreground);
+}
+
+/* Subtle sillar (Arequipa stone) dot-grid motif — used in hero + auth panel */
+.sillar-grid {
+    background-image: radial-gradient(var(--border) 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
+/* Gentle mount entrance for hero + product showcase */
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.animate-rise {
+    animation: rise 0.5s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-rise {
+        animation: none;
+    }
 }
