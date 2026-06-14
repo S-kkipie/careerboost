@@ -1,8 +1,26 @@
 "use client";
 
-import { type SubmitEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Settings } from "@/frontend/components/auth/settings/settings";
+import { ChipsInput } from "@/frontend/components/profile/chips-input";
 import { Button } from "@/frontend/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/frontend/components/ui/card";
+import { Input } from "@/frontend/components/ui/input";
+import { Label } from "@/frontend/components/ui/label";
 import { Skeleton } from "@/frontend/components/ui/skeleton";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/frontend/components/ui/tabs";
+import { Textarea } from "@/frontend/components/ui/textarea";
 import { useProfile, useUpdateProfile } from "@/frontend/hooks/api";
 import { errorMessage } from "@/frontend/lib/format";
 
@@ -10,8 +28,8 @@ interface FormState {
     escuelaProfesional: string;
     grado: string;
     ubicacion: string;
-    intereses: string;
-    skills: string;
+    skills: string[];
+    intereses: string[];
     experienciaResumen: string;
     expectativaSalarial: string;
 }
@@ -20,43 +38,11 @@ const EMPTY: FormState = {
     escuelaProfesional: "",
     grado: "",
     ubicacion: "",
-    intereses: "",
-    skills: "",
+    skills: [],
+    intereses: [],
     experienciaResumen: "",
     expectativaSalarial: "",
 };
-
-function toList(value: string): string[] {
-    return value
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-}
-
-interface FieldProps {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    type?: string;
-}
-
-function Field({ id, label, value, onChange, type = "text" }: FieldProps) {
-    return (
-        <div className="flex flex-col gap-1">
-            <label htmlFor={id} className="font-medium text-foreground text-sm">
-                {label}
-            </label>
-            <input
-                id={id}
-                type={type}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="h-10 rounded-md border bg-background px-3 text-foreground text-sm"
-            />
-        </div>
-    );
-}
 
 export default function PerfilPage() {
     const profileQuery = useProfile();
@@ -71,8 +57,8 @@ export default function PerfilPage() {
                 escuelaProfesional: profile.escuelaProfesional ?? "",
                 grado: profile.grado ?? "",
                 ubicacion: profile.ubicacion ?? "",
-                intereses: (profile.intereses ?? []).join(", "),
-                skills: (profile.skills ?? []).join(", "),
+                skills: profile.skills ?? [],
+                intereses: profile.intereses ?? [],
                 experienciaResumen: profile.experienciaResumen ?? "",
                 expectativaSalarial:
                     profile.expectativaSalarial === null ||
@@ -83,11 +69,23 @@ export default function PerfilPage() {
         }
     }, [profile]);
 
-    function update(field: keyof FormState, value: string) {
+    useEffect(() => {
+        if (updateProfile.isSuccess) {
+            toast.success("Perfil guardado");
+        }
+    }, [updateProfile.isSuccess]);
+
+    useEffect(() => {
+        if (updateProfile.isError) {
+            toast.error(errorMessage(updateProfile.error));
+        }
+    }, [updateProfile.isError, updateProfile.error]);
+
+    function update<K extends keyof FormState>(field: K, value: FormState[K]) {
         setForm((prev) => ({ ...prev, [field]: value }));
     }
 
-    function onSubmit(e: SubmitEvent<HTMLFormElement>) {
+    function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const salarioTrim = form.expectativaSalarial.trim();
         let expectativaSalarial: number | null = null;
@@ -99,8 +97,8 @@ export default function PerfilPage() {
             escuelaProfesional: form.escuelaProfesional,
             grado: form.grado,
             ubicacion: form.ubicacion,
-            intereses: toList(form.intereses),
-            skills: toList(form.skills),
+            intereses: form.intereses,
+            skills: form.skills,
             experienciaResumen: form.experienciaResumen,
             expectativaSalarial,
         });
@@ -119,79 +117,141 @@ export default function PerfilPage() {
     }
 
     return (
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <h1 className="font-bold text-2xl text-foreground">Tu perfil</h1>
+        <Tabs defaultValue="perfil" className="w-full gap-4">
+            <TabsList>
+                <TabsTrigger value="perfil">Perfil profesional</TabsTrigger>
+                <TabsTrigger value="cuenta">Cuenta</TabsTrigger>
+            </TabsList>
 
-            <Field
-                id="escuela"
-                label="Escuela profesional"
-                value={form.escuelaProfesional}
-                onChange={(v) => update("escuelaProfesional", v)}
-            />
-            <Field
-                id="grado"
-                label="Grado"
-                value={form.grado}
-                onChange={(v) => update("grado", v)}
-            />
-            <Field
-                id="ubicacion"
-                label="Ubicación"
-                value={form.ubicacion}
-                onChange={(v) => update("ubicacion", v)}
-            />
-            <Field
-                id="intereses"
-                label="Intereses (separados por coma)"
-                value={form.intereses}
-                onChange={(v) => update("intereses", v)}
-            />
-            <Field
-                id="skills"
-                label="Habilidades (separadas por coma)"
-                value={form.skills}
-                onChange={(v) => update("skills", v)}
-            />
+            <TabsContent value="perfil" tabIndex={-1}>
+                <form onSubmit={onSubmit} className="flex flex-col gap-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Académico</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="escuela">
+                                    Escuela profesional
+                                </Label>
+                                <Input
+                                    id="escuela"
+                                    value={form.escuelaProfesional}
+                                    onChange={(e) =>
+                                        update(
+                                            "escuelaProfesional",
+                                            e.target.value,
+                                        )
+                                    }
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="grado">Grado</Label>
+                                <Input
+                                    id="grado"
+                                    value={form.grado}
+                                    onChange={(e) =>
+                                        update("grado", e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="ubicacion">Ubicación</Label>
+                                <Input
+                                    id="ubicacion"
+                                    value={form.ubicacion}
+                                    onChange={(e) =>
+                                        update("ubicacion", e.target.value)
+                                    }
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
-            <div className="flex flex-col gap-1">
-                <label
-                    htmlFor="experiencia"
-                    className="font-medium text-foreground text-sm"
-                >
-                    Resumen de experiencia
-                </label>
-                <textarea
-                    id="experiencia"
-                    value={form.experienciaResumen}
-                    onChange={(e) =>
-                        update("experienciaResumen", e.target.value)
-                    }
-                    rows={4}
-                    className="rounded-md border bg-background px-3 py-2 text-foreground text-sm"
-                />
-            </div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Profesional</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="skills">Habilidades</Label>
+                                <ChipsInput
+                                    id="skills"
+                                    value={form.skills}
+                                    onChange={(next) => update("skills", next)}
+                                    placeholder="Escribe una habilidad y presiona Enter o coma"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="intereses">Intereses</Label>
+                                <ChipsInput
+                                    id="intereses"
+                                    value={form.intereses}
+                                    onChange={(next) =>
+                                        update("intereses", next)
+                                    }
+                                    placeholder="Escribe un interés y presiona Enter o coma"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="experiencia">
+                                    Resumen de experiencia
+                                </Label>
+                                <Textarea
+                                    id="experiencia"
+                                    value={form.experienciaResumen}
+                                    onChange={(e) =>
+                                        update(
+                                            "experienciaResumen",
+                                            e.target.value,
+                                        )
+                                    }
+                                    rows={4}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
-            <Field
-                id="salario"
-                label="Expectativa salarial (S/)"
-                type="number"
-                value={form.expectativaSalarial}
-                onChange={(v) => update("expectativaSalarial", v)}
-            />
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Preferencias</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="salario">
+                                    Expectativa salarial (S/)
+                                </Label>
+                                <Input
+                                    id="salario"
+                                    type="number"
+                                    value={form.expectativaSalarial}
+                                    onChange={(e) =>
+                                        update(
+                                            "expectativaSalarial",
+                                            e.target.value,
+                                        )
+                                    }
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
-            <div className="flex items-center gap-3">
-                <Button type="submit" disabled={updateProfile.isPending}>
-                    {updateProfile.isPending ? "Guardando…" : "Guardar cambios"}
-                </Button>
-                {updateProfile.isSuccess ? (
-                    <span className="text-success text-sm">Guardado ✓</span>
-                ) : null}
-                {updateProfile.isError ? (
-                    <span className="text-destructive text-sm">
-                        {errorMessage(updateProfile.error)}
-                    </span>
-                ) : null}
-            </div>
-        </form>
+                    <div className="flex items-center gap-3">
+                        <Button
+                            type="submit"
+                            disabled={updateProfile.isPending}
+                        >
+                            {updateProfile.isPending
+                                ? "Guardando…"
+                                : "Guardar cambios"}
+                        </Button>
+                    </div>
+                </form>
+            </TabsContent>
+
+            <TabsContent value="cuenta" tabIndex={-1}>
+                <Settings view="account" />
+            </TabsContent>
+        </Tabs>
     );
 }
