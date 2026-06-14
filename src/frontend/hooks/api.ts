@@ -31,6 +31,11 @@ export function useFeed(filters: FeedFilters) {
     return useQuery(api.match.get.queryOptions(filters));
 }
 
+export function useDigest() {
+    const api = useElysia();
+    return useQuery(api.digest.get.queryOptions());
+}
+
 // --- Mutations (raw treaty client for deterministic typing) ---
 
 export function useRunIngestion() {
@@ -132,6 +137,25 @@ export function useSetMatchStatus() {
             return res.data;
         },
         onSuccess: () => {
+            qc.invalidateQueries({ queryKey: api.match.get.queryKey() });
+            qc.invalidateQueries({ queryKey: api.digest.get.queryKey() });
+        },
+    });
+}
+
+export function useMarkDigestSeen() {
+    const api = useElysia();
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async () => {
+            const res = await apiClient.api.v1.digest.seen.post();
+            if (res.error) {
+                throw res.error;
+            }
+            return res.data;
+        },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: api.digest.get.queryKey() });
             qc.invalidateQueries({ queryKey: api.match.get.queryKey() });
         },
     });
