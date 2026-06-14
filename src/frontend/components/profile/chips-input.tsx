@@ -23,8 +23,7 @@ export function ChipsInput({
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === "Enter" || e.key === ",") {
             e.preventDefault();
-            const raw = e.key === "," ? text : text;
-            onChange(addChip(value, raw));
+            onChange(addChip(value, text));
             setText("");
         }
     }

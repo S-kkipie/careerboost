@@ -1,4 +1,11 @@
-import { Bookmark, Building2, MapPin, Sparkles, X } from "lucide-react";
+import {
+    Bookmark,
+    Briefcase,
+    Building2,
+    MapPin,
+    Sparkles,
+    X,
+} from "lucide-react";
 import { Badge } from "@/frontend/components/ui/badge";
 import { Button, buttonVariants } from "@/frontend/components/ui/button";
 import {
@@ -77,7 +84,7 @@ export function MatchCard({
 
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-xs">
                     <span className="flex items-center gap-1">
-                        <Building2 className="size-3.5 shrink-0" />
+                        <Briefcase className="size-3.5 shrink-0" />
                         {modalidadLabel(item.job.modalidad)}
                     </span>
                     {item.job.ubicacion ? (
