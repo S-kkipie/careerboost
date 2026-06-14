@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type SubmitEvent, useEffect, useState } from "react";
 import { Button } from "@/frontend/components/ui/button";
 import { Skeleton } from "@/frontend/components/ui/skeleton";
 import { useProfile, useUpdateProfile } from "@/frontend/hooks/api";
@@ -87,7 +87,7 @@ export default function PerfilPage() {
         setForm((prev) => ({ ...prev, [field]: value }));
     }
 
-    function onSubmit(e: FormEvent) {
+    function onSubmit(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         const salarioTrim = form.expectativaSalarial.trim();
         let expectativaSalarial: number | null = null;
