@@ -1,5 +1,3 @@
-import type * as React from "react";
-
 import { cn } from "@/frontend/lib/utils";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
