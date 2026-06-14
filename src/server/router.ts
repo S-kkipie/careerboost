@@ -2,6 +2,7 @@ import { elysiaLogger } from "@logtape/elysia";
 import { getLogger } from "@logtape/logtape";
 import { Elysia } from "elysia";
 import { auth } from "@/server/auth/auth";
+import { digestRouter } from "@/server/routers/digest";
 import { gmailRouter } from "@/server/routers/gmail";
 import { healthRouter } from "@/server/routers/health";
 import { ingestRouter } from "@/server/routers/ingest";
@@ -38,7 +39,8 @@ const app = new Elysia({ prefix: "/api/v1" })
     .use(gmailRouter)
     .use(profileRouter)
     .use(ingestRouter)
-    .use(matchRouter);
+    .use(matchRouter)
+    .use(digestRouter);
 
 export default app;
 export type AppRouter = typeof app;
