@@ -14,6 +14,7 @@ import {
     useUploadCv,
 } from "@/frontend/hooks/api";
 import { errorMessage } from "@/frontend/lib/format";
+import { cn } from "@/frontend/lib/utils";
 
 function OnboardingFlow() {
     const router = useRouter();
@@ -29,13 +30,18 @@ function OnboardingFlow() {
     function onCvChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (file) {
+            e.target.value = "";
             uploadCv.mutate({ file });
         }
     }
 
     async function onGenerate() {
-        await runMatching.mutateAsync();
-        router.push("/feed");
+        try {
+            await runMatching.mutateAsync();
+            router.push("/feed");
+        } catch {
+            // runMatching.error already shown in the UI
+        }
     }
 
     return (
@@ -74,7 +80,12 @@ function OnboardingFlow() {
                 </p>
                 <label
                     htmlFor="cv-file"
-                    className="mt-2 inline-flex cursor-pointer items-center gap-2"
+                    className={cn(
+                        "mt-2 inline-flex items-center gap-2",
+                        uploadCv.isPending
+                            ? "cursor-not-allowed opacity-50"
+                            : "cursor-pointer",
+                    )}
                 >
                     <input
                         id="cv-file"
