@@ -9,6 +9,8 @@ import { HowItWorks } from "@/frontend/components/landing/how-it-works";
 import { ImpactBand } from "@/frontend/components/landing/impact-band";
 import { LandingFooter } from "@/frontend/components/landing/landing-footer";
 import { LandingNav } from "@/frontend/components/landing/landing-nav";
+import { ProductShowcase } from "@/frontend/components/landing/product-showcase";
+import { TrustStrip } from "@/frontend/components/landing/trust-strip";
 import { Spinner } from "@/frontend/components/ui/spinner";
 
 export default function Home() {
@@ -34,8 +36,10 @@ export default function Home() {
             <LandingNav />
             <main className="pt-16">
                 <Hero />
-                <ImpactBand />
+                <TrustStrip />
+                <ProductShowcase />
                 <HowItWorks />
+                <ImpactBand />
                 <CtaBand />
             </main>
             <LandingFooter />
