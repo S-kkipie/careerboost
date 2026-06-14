@@ -1,4 +1,13 @@
-import { Button } from "@/frontend/components/ui/button";
+import { Search } from "lucide-react";
+import { Input } from "@/frontend/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/frontend/components/ui/select";
+import { Switch } from "@/frontend/components/ui/switch";
 
 interface FiltersBarProps {
     soloConSalario: boolean;
@@ -27,36 +36,45 @@ export function FiltersBar({
 }: FiltersBarProps) {
     return (
         <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2 text-foreground text-sm">
-                <input
-                    type="checkbox"
+            <div className="flex items-center gap-2">
+                <Switch
+                    id="solo-con-salario"
                     checked={soloConSalario}
-                    onChange={(e) => onSoloConSalarioChange(e.target.checked)}
+                    onCheckedChange={onSoloConSalarioChange}
+                    size="sm"
                 />
-                Solo con salario
-            </label>
-
-            <div className="flex gap-1">
-                {MODALIDADES.map((m) => (
-                    <Button
-                        key={m === "" ? "todas" : m}
-                        variant={modalidad === m ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => onModalidadChange(m)}
-                    >
-                        {MODALIDAD_LABELS[m]}
-                    </Button>
-                ))}
+                <label
+                    htmlFor="solo-con-salario"
+                    className="cursor-pointer text-foreground text-sm select-none"
+                >
+                    Solo con salario
+                </label>
             </div>
 
-            <input
-                type="text"
-                value={ubicacion}
-                placeholder="Ubicación"
-                aria-label="Filtrar por ubicación"
-                onChange={(e) => onUbicacionChange(e.target.value)}
-                className="h-8 rounded-md border bg-background px-3 text-foreground text-sm"
-            />
+            <Select value={modalidad} onValueChange={onModalidadChange}>
+                <SelectTrigger size="sm" className="w-36">
+                    <SelectValue placeholder="Modalidad" />
+                </SelectTrigger>
+                <SelectContent>
+                    {MODALIDADES.map((m) => (
+                        <SelectItem key={m === "" ? "todas" : m} value={m}>
+                            {MODALIDAD_LABELS[m]}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <div className="relative">
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                    type="text"
+                    value={ubicacion}
+                    placeholder="Ubicación"
+                    aria-label="Filtrar por ubicación"
+                    onChange={(e) => onUbicacionChange(e.target.value)}
+                    className="h-8 w-44 pl-8"
+                />
+            </div>
         </div>
     );
 }
