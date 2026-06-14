@@ -8,8 +8,8 @@ import {
 } from "@/frontend/lib/format";
 
 export interface MatchCardJob {
-    titulo: string;
-    empresa: string;
+    titulo: string | null;
+    empresa: string | null;
     modalidad: string | null;
     ubicacion: string | null;
     salario_min: number | null;
