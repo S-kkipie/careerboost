@@ -1,11 +1,15 @@
 "use client";
 
-import { SearchX } from "lucide-react";
+import { RefreshCw, SearchX } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { type ReactNode, Suspense } from "react";
 import { FiltersBar } from "@/frontend/components/feed/filters-bar";
 import { ImpactPanel } from "@/frontend/components/feed/impact-panel";
 import { MatchCard } from "@/frontend/components/feed/match-card";
+import { SyncCta } from "@/frontend/components/feed/sync-cta";
+import { SyncError } from "@/frontend/components/feed/sync-error";
+import { SyncProgress } from "@/frontend/components/feed/sync-progress";
+import { Button } from "@/frontend/components/ui/button";
 import {
     Empty,
     EmptyDescription,
@@ -19,6 +23,7 @@ import {
     useLastIngestion,
     useSetMatchStatus,
 } from "@/frontend/hooks/api";
+import { useSyncBolsa } from "@/frontend/hooks/use-sync-bolsa";
 
 function FeedInner() {
     const [soloConSalario, setSoloConSalario] = useQueryState(
@@ -33,6 +38,7 @@ function FeedInner() {
     });
 
     const ingestion = useLastIngestion();
+    const sync = useSyncBolsa();
     const feed = useFeed({
         solo_con_salario: soloConSalario,
         modalidad,
@@ -41,6 +47,20 @@ function FeedInner() {
     const setStatus = useSetMatchStatus();
 
     const matches = feed.data?.matches ?? [];
+    const hasRun = Boolean(ingestion.data?.run);
+
+    // Sync in progress — take over the whole feed body.
+    if (sync.isRunning) {
+        return <SyncProgress label={sync.label} />;
+    }
+    // Sync failed.
+    if (sync.stage === "error") {
+        return <SyncError error={sync.error} onRetry={sync.start} />;
+    }
+    // Never synced (fresh from onboarding) — large primary CTA.
+    if (!ingestion.isPending && !hasRun) {
+        return <SyncCta onSync={sync.start} />;
+    }
 
     let feedSection: ReactNode;
     if (feed.isPending) {
@@ -94,6 +114,17 @@ function FeedInner() {
 
     return (
         <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-end">
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={sync.start}
+                >
+                    <RefreshCw aria-hidden="true" />
+                    Sincronizar ahora
+                </Button>
+            </div>
             <ImpactPanel
                 run={ingestion.data?.run ?? null}
                 isLoading={ingestion.isPending}
