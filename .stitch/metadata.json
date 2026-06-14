@@ -1,21 +1,58 @@
 {
-  "name": "projects/12329140981897677948",
-  "projectId": "12329140981897677948",
-  "title": "CareerBoost — CONECTA UNSA",
-  "visibility": "PRIVATE",
-  "createTime": "2026-06-14T17:03:44.480028Z",
-  "updateTime": "2026-06-14T17:03:44.480028Z",
-  "projectType": "PROJECT_DESIGN",
-  "origin": "STITCH",
-  "deviceType": "DESKTOP",
-  "designTheme": {
-    "colorMode": "LIGHT",
-    "font": "INTER",
-    "roundness": "ROUND_EIGHT",
-    "customColor": "#2563EB"
-  },
-  "screens": {},
-  "metadata": {
-    "userRole": "OWNER"
-  }
+    "name": "projects/12329140981897677948",
+    "projectId": "12329140981897677948",
+    "title": "CareerBoost — CONECTA UNSA",
+    "visibility": "PRIVATE",
+    "createTime": "2026-06-14T17:03:44.480028Z",
+    "updateTime": "2026-06-14T17:03:44.480028Z",
+    "projectType": "PROJECT_DESIGN",
+    "origin": "STITCH",
+    "deviceType": "DESKTOP",
+    "designTheme": {
+        "colorMode": "LIGHT",
+        "font": "INTER",
+        "roundness": "ROUND_EIGHT",
+        "customColor": "#2563EB"
+    },
+    "screens": {
+        "landing": {
+            "id": "aa4a1d1a80874a329e3e80b65259c940",
+            "sourceScreen": "projects/12329140981897677948/screens/aa4a1d1a80874a329e3e80b65259c940",
+            "width": 2560,
+            "height": 5674
+        },
+        "login": {
+            "id": "953564df35b84717967864f8ae2db7dc",
+            "sourceScreen": "projects/12329140981897677948/screens/953564df35b84717967864f8ae2db7dc",
+            "width": 2560,
+            "height": 2048
+        },
+        "onboarding": {
+            "id": "e7e817c5b1d54127a69e59c99020d000",
+            "sourceScreen": "projects/12329140981897677948/screens/e7e817c5b1d54127a69e59c99020d000",
+            "width": 2560,
+            "height": 2332
+        },
+        "perfil": {
+            "id": "99e30765d1b3440abef6a330affb0732",
+            "sourceScreen": "projects/12329140981897677948/screens/99e30765d1b3440abef6a330affb0732",
+            "width": 2560,
+            "height": 3378
+        },
+        "feed": {
+            "id": "cfb94e8832ee4daa96cb195681387ce4",
+            "sourceScreen": "projects/12329140981897677948/screens/cfb94e8832ee4daa96cb195681387ce4",
+            "width": 2560,
+            "height": 2730
+        },
+        "digest": {
+            "id": "b6291e6f02c54c1ab53a7521ad5f5c63",
+            "sourceScreen": "projects/12329140981897677948/screens/b6291e6f02c54c1ab53a7521ad5f5c63",
+            "width": 2560,
+            "height": 3242
+        }
+    },
+    "metadata": {
+        "userRole": "OWNER"
+    }
 }

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="es-PE"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tu digest - CareerBoost (CONECTA UNSA)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f3f3f3",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-container": "#eeefff",
+                        "secondary-fixed-dim": "#62df7d",
+                        "secondary-fixed": "#7ffc97",
+                        "outline-variant": "#c3c6d7",
+                        "outline": "#737686",
+                        "on-secondary-fixed-variant": "#005320",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "inverse-surface": "#2f3131",
+                        "tertiary-container": "#a65900",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#7cf994",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container": "#eeeeee",
+                        "surface-dim": "#dadada",
+                        "on-tertiary-container": "#ffede1",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "surface-tint": "#0053db",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e2e2e2",
+                        "on-background": "#1a1c1c",
+                        "secondary": "#006e2d",
+                        "primary-container": "#2563eb",
+                        "on-secondary-fixed": "#002109",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b4c5ff",
+                        "background": "#f9f9f9",
+                        "tertiary": "#824500",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface": "#1a1c1c",
+                        "primary": "#004ac6",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-container-high": "#e8e8e8",
+                        "on-tertiary-fixed": "#2f1500",
+                        "on-secondary-container": "#007230",
+                        "tertiary-fixed": "#ffdcc3",
+                        "surface-bright": "#f9f9f9",
+                        "surface-container-highest": "#e2e2e2",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed": "#00174b",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1100px",
+                        "section-gap": "64px",
+                        "stack-gap": "16px",
+                        "edge-margin-desktop": "48px",
+                        "edge-margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface-dim w-full sticky top-0 z-50 border-b border-outline-variant dark:border-outline flat no shadows">
+<div class="flex justify-between items-center px-edge-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">CareerBoost (CONECTA UNSA)</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant dark:text-outline-variant font-medium hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80 font-body-md text-body-md" href="#">Feed</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80 font-body-md text-body-md" href="#">Tu digest</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container rounded-lg border-none focus:ring-2 focus:ring-primary-container text-body-sm font-body-sm w-64" placeholder="Buscar..." type="text"/>
+</div>
+<button class="p-2 cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="dark_mode">dark_mode</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User profile" data-alt="A professional headshot of a university student with a friendly expression, set against a blurred academic background. The lighting is soft and natural, emphasizing a professional yet approachable persona, fitting for a career platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSf4ihMr8X16_uwC-85xixLCt898bziSq0KxKtXZv4tnDFljoUF6eGaaYbK0qbWYdLxvs96wfco0MgLJIbSnvav8nINoL1zGKZtsLeGComSh29ihXJnBXILBCrRNRhYblzAV3l23gSng9wXmifoZroCFnmsApNrkxnuvQ3_dngx4Yi5jBSjnv6cdS4e804DosZJ-H11jsZbgdHUs1cfInzmdVh2TD2tecTS5cMqXT3C4KLE6VyYTVBRWXXFhll7ddahwlkhF4peuNo"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-container-max mx-auto px-edge-margin-desktop py-section-gap">
+<!-- Header Section -->
+<header class="mb-section-gap">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Tu digest</h1>
+<p class="font-title-lg text-title-lg text-primary mb-4">Tus mejores oportunidades de hoy</p>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                Hemos analizado más de 100 correos de reclutamiento para entregarte solo lo que te interesa.
+            </p>
+</header>
+<!-- Main Section: Digest List -->
+<section class="flex flex-col gap-stack-gap">
+<!-- Card 1 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-[10px] p-6 flex flex-col md:flex-row gap-6 hover:shadow-sm transition-shadow">
+<div class="w-16 h-16 bg-white border border-outline-variant rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+<img alt="Tech Solutions Logo" class="w-10 h-10 object-contain" data-alt="A clean, minimalist tech company logo featuring abstract geometric shapes in professional navy blue and white, centered on a white square background. The style is modern, corporate, and trustworthy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-3KbWKPaKnyWdfPZQRo_Ab3R5m3moeuYYiOrInqHpAWyKunbeNCILA_ujdyBIt9vRrHmhq1diCEkgv7soQtjRZ4latG-obBXPOX8KUJPRpWEAO46msXdXxkto3EpAJZWpjBkYI5gAEdFrHDAdTeFSPmgaPc2x-vww2WRcWKZIFH96ntJ9hhOaOSemoE_D51rluoo9xBxRVpvmJfPs2sOaLj12P2kniHOk0OWIuX-XQY7B1e7b_mFriZm1h52IKL5M5SVlRxtzl7NF"/>
+</div>
+<div class="flex-grow">
+<div class="flex flex-wrap items-center gap-2 mb-2">
+<h3 class="font-title-lg text-title-lg text-on-surface">Senior Frontend Developer</h3>
+<span class="bg-secondary-container text-on-secondary-container text-label-sm font-label-sm px-3 py-1 rounded-full">96% match</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant font-semibold mb-3">Tech Solutions</p>
+<div class="flex items-center gap-4 mb-4">
+<span class="flex items-center gap-1.5 bg-[#e6f4ea] text-[#1e7e34] px-3 py-1 rounded-full text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                            S/ 8,500 - S/ 11,000 mensual
+                        </span>
+</div>
+<div class="bg-surface p-4 rounded-lg border-l-4 border-primary">
+<p class="font-body-sm text-body-sm text-on-surface">
+<span class="font-bold text-primary">¿Por qué este match?</span> Tu experiencia en React y Tailwind coincide al 100% con los requisitos técnicos.
+                        </p>
+</div>
+</div>
+<div class="flex flex-col justify-center">
+<button class="bg-primary text-on-primary font-label-md px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">Ver detalle</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-[10px] p-6 flex flex-col md:flex-row gap-6 hover:shadow-sm transition-shadow">
+<div class="w-16 h-16 bg-white border border-outline-variant rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+<img alt="Empresa Local Logo" class="w-10 h-10 object-contain" data-alt="A traditional yet modern corporate logo for a local Peruvian systems company, using professional color schemes like charcoal grey and deep blue. The design is clean and structured, evoking stability and institutional authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu1ek-Ii7ObmKxjiYI2SkBaLgTgKptS8-n818R8fcpDlwO9hQ6XEmOPmcd3kCCsZhhFBx_ghbipV04b7x6p3cr9vFANmCc07ES7joKiBjSC__uDic-wQN3vxVWHSoU3_6PUfbobE34mFZHu9C5ELj6kRrF9CNnOVVZTFA2F-iJwZIAbG6dJVeEpDspQoV7cp2z83ixiNV755-R_utDk_Mz4CIsuBfStkEhuL-AHj3OTvf1d9FQL2uHAa6ie8yTBtxZU-zcZ1a1y481"/>
+</div>
+<div class="flex-grow">
+<div class="flex flex-wrap items-center gap-2 mb-2">
+<h3 class="font-title-lg text-title-lg text-on-surface">Analista de Sistemas</h3>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-3 py-1 rounded-full">88% match</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant font-semibold mb-3">Empresa Local SAC</p>
+<div class="flex items-center gap-4 mb-4">
+<span class="flex items-center gap-1.5 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[18px]">visibility_off</span>
+                            Salario no especificado
+                        </span>
+</div>
+<div class="bg-surface p-4 rounded-lg border-l-4 border-outline">
+<p class="font-body-sm text-body-sm text-on-surface">
+<span class="font-bold text-outline">¿Por qué este match?</span> Buscan un perfil con formación en Ingeniería de Sistemas como la tuya.
+                        </p>
+</div>
+</div>
+<div class="flex flex-col justify-center">
+<button class="border border-outline text-on-surface font-label-md px-6 py-2 rounded-lg hover:bg-surface-variant transition-colors">Ver detalle</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-[10px] p-6 flex flex-col md:flex-row gap-6 hover:shadow-sm transition-shadow">
+<div class="w-16 h-16 bg-white border border-outline-variant rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+<img alt="Startup Global Logo" class="w-10 h-10 object-contain" data-alt="A vibrant and energetic startup logo featuring a stylized global icon with bright primary blue gradients. The design communicates innovation, connectivity, and a forward-thinking global culture, suitable for a UX/UI design role." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANkW8zRA6fMWq-u1Gw7-fAA0_a46JQ2yNmogxj5OcVU0Kbh3fho1NsjFSixNAYZjFuNVJtu1-oOKkN9m6a3EqYn1kxBDncCvfNQGg-Ql0XqGw_ISplL2zTdt_WwcvGfTLWsfhSikVDG89WwVEJVapYVhSJVVOFYLGPBTvF3xiT5zS-vmdM_5yyitxORRMSoobr5gD3c1o6doUSVkcbTjWFcacPPqiT9Fp3lWlsR2jRX9QIs5MAZAmroLIqCJzla0Z3Ji2ABjGj_vKp"/>
+</div>
+<div class="flex-grow">
+<div class="flex flex-wrap items-center gap-2 mb-2">
+<h3 class="font-title-lg text-title-lg text-on-surface">UX/UI Designer Junior</h3>
+<span class="bg-secondary-container text-on-secondary-container text-label-sm font-label-sm px-3 py-1 rounded-full">92% match</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant font-semibold mb-3">Startup Global</p>
+<div class="flex items-center gap-4 mb-4">
+<span class="flex items-center gap-1.5 bg-[#e6f4ea] text-[#1e7e34] px-3 py-1 rounded-full text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                            S/ 3,500 - S/ 4,500 mensual
+                        </span>
+</div>
+<div class="bg-surface p-4 rounded-lg border-l-4 border-primary">
+<p class="font-body-sm text-body-sm text-on-surface">
+<span class="font-bold text-primary">¿Por qué este match?</span> Tu portafolio demuestra las habilidades de diseño visual que solicitan.
+                        </p>
+</div>
+</div>
+<div class="flex flex-col justify-center">
+<button class="bg-primary text-on-primary font-label-md px-6 py-2 rounded-lg hover:opacity-90 transition-opacity">Ver detalle</button>
+</div>
+</div>
+</section>
+<!-- Empty State Note -->
+<div class="mt-12 py-12 flex flex-col items-center justify-center border-t border-outline-variant border-dashed">
+<span class="material-symbols-outlined text-outline-variant text-4xl mb-4" data-icon="done_all">done_all</span>
+<p class="text-outline font-body-md text-body-md">No hay nada nuevo por hoy</p>
+</div>
+<!-- Action Button -->
+<div class="mt-section-gap flex justify-center">
+<button class="bg-[#2563EB] text-white font-label-md px-8 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+<span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span>
+                Marcar como visto
+            </button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-lowest w-full mt-section-gap border-t border-outline-variant dark:border-outline flat no shadows">
+<div class="flex flex-col md:flex-row justify-between items-center px-edge-margin-desktop py-8 max-w-container-max mx-auto gap-stack-gap">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-label-md text-label-md font-semibold text-on-surface dark:text-on-surface-variant">CareerBoost (CONECTA UNSA)</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant dark:text-outline-variant">© 2024 CONECTA UNSA - Universidad Nacional de San Agustín de Arequipa. Todos los derechos reservados.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant dark:text-outline-variant font-body-sm text-body-sm hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer" href="#">Privacidad</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-body-sm text-body-sm hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer" href="#">Términos de Servicio</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-body-sm text-body-sm hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer" href="#">Contacto Institucional</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-body-sm text-body-sm hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer" href="#">Ayuda</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for "Marcar como visto"
+        const markAsSeenBtn = document.querySelector('button.bg-\\[\\#2563EB\\]');
+        markAsSeenBtn.addEventListener('click', () => {
+            markAsSeenBtn.innerHTML = `
+                <span class="material-symbols-outlined text-[20px] animate-bounce" data-icon="check_circle">check_circle</span>
+                Completado
+            `;
+            markAsSeenBtn.classList.remove('bg-[#2563EB]');
+            markAsSeenBtn.classList.add('bg-secondary');
+            
+            setTimeout(() => {
+                alert('Digest marcado como leído. ¡Buen trabajo!');
+            }, 300);
+        });
+    </script>
+</body></html>

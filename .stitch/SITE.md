@@ -19,12 +19,12 @@ Presentation goal: a polished hackathon demo across the full funnel.
   markup — they use **better-auth-ui** functional components dropped into the Stitch layout.
 
 ## 4. Sitemap
-- [ ] landing — `/` (public marketing/hero)
-- [ ] login — `/auth/[pathname]` (better-auth-ui AuthCard in branded split layout)
-- [ ] onboarding — `/onboarding` (3-step wizard)
-- [ ] perfil — `/(app)/perfil` (tabs: Perfil profesional + Cuenta)
-- [ ] feed — `/(app)/feed` (matches inbox)
-- [ ] digest — `/(app)/digest` (Tu digest)
+- [x] landing — `/` (public marketing/hero)
+- [x] login — `/auth/[pathname]` (better-auth-ui AuthCard in branded split layout)
+- [x] onboarding — `/onboarding` (3-step wizard)
+- [x] perfil — `/(app)/perfil` (tabs: Perfil profesional + Cuenta)
+- [x] feed — `/(app)/feed` (matches inbox)
+- [x] digest — `/(app)/digest` (Tu digest)
 
 ## 5. Roadmap
 1. Generate all mockups (landing, login, onboarding, perfil, feed, digest) — Task 5.

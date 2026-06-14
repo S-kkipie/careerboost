@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareerBoost - Feed de Empleos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-container-high": "#e8e8e8",
+                        "on-primary-container": "#eeefff",
+                        "primary-container": "#2563eb",
+                        "surface-dim": "#dadada",
+                        "tertiary-fixed": "#ffdcc3",
+                        "surface-container-highest": "#e2e2e2",
+                        "tertiary-container": "#a65900",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-surface": "#2f3131",
+                        "secondary-fixed": "#7ffc97",
+                        "inverse-primary": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "on-secondary-fixed": "#002109",
+                        "outline": "#737686",
+                        "on-surface": "#1a1c1c",
+                        "background": "#f9f9f9",
+                        "tertiary": "#824500",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-fixed": "#00174b",
+                        "secondary-fixed-dim": "#62df7d",
+                        "secondary-container": "#7cf994",
+                        "outline-variant": "#c3c6d7",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#eeeeee",
+                        "on-surface-variant": "#434655",
+                        "on-secondary-fixed-variant": "#005320",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "surface-variant": "#e2e2e2",
+                        "surface": "#f9f9f9",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary": "#006e2d",
+                        "on-tertiary-container": "#ffede1",
+                        "on-background": "#1a1c1c",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#2f1500",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#0053db",
+                        "on-secondary-container": "#007230"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "64px",
+                        "edge-margin-desktop": "48px",
+                        "gutter": "24px",
+                        "edge-margin-mobile": "20px",
+                        "stack-gap": "16px",
+                        "container-max": "1100px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "title-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for institutional feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c3c6d7;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #737686;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline fixed top-0 w-full z-50 h-16">
+<div class="flex justify-between items-center px-edge-margin-desktop max-w-container-max mx-auto w-full h-full">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">CareerBoost</span>
+<nav class="hidden md:flex items-center gap-6 h-full">
+<a class="font-body-md text-body-md text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 font-bold h-16 flex items-center mt-1" href="#">Feed</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors h-16 flex items-center" href="#">Tu digest</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors" title="Toggle Theme">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="dark_mode">dark_mode</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="A professional and friendly close-up portrait of a female university student with a bright smile. She has warm brown eyes and dark hair, wearing a professional navy blue blazer over a white shirt. The background is a soft-focus campus setting with modern architectural lines and natural sunlight, creating a high-key, institutional and ambitious aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtiheIyQDQNJ4p9JF5VmZ3N4AYs_6Eh5CsteK5b6A_ztZ3uqHVDqoLyeom3lxBMjEpXwWAiQYMuNlvm0ub_3PcY9daM4fVlcrgt4Sxw1JRNZL5BpsNAtTFDUfCs6buTmjyZ1nUcHrphPZIrZxp77B5Ne9y4OIrwHPUlXbolBOoudxUMhnh15rpFYIQvPQkduBwU0sWYxZBbOxji6JI9oEPJ0ymjt-ayAzhjhU7hJ_HD0esgyASit9vSJ-qzgjpNl7DtCjSCQ5gYT0A"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-16 px-edge-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-start">
+<!-- Main Column (Filters & List) -->
+<div class="md:col-span-8 space-y-6">
+<!-- Filter Bar -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-[10px] p-4 flex flex-wrap items-center gap-4 shadow-sm">
+<div class="flex items-center gap-3 pr-4 border-r border-outline-variant">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+<span class="ms-3 font-label-md text-label-md text-on-surface">Solo con salario</span>
+</label>
+</div>
+<div class="flex-1 min-w-[150px]">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm text-body-sm px-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+<option value="">Modalidad</option>
+<option value="remoto">Remoto</option>
+<option value="presencial">Presencial</option>
+<option value="hibrido">Híbrido</option>
+</select>
+</div>
+<div class="flex-1 min-w-[200px] relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-body-md" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm text-body-sm pl-10 pr-3 py-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Ubicación" type="text"/>
+</div>
+</section>
+<!-- Match List -->
+<div class="space-y-4">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-[10px] p-6 hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface group-hover:text-primary transition-colors">Senior Frontend Developer</h3>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">Tech Solutions</p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+                                96% match
+                            </span>
+</div>
+<div class="flex flex-wrap gap-4 mt-3 mb-4 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="work">work</span> Remoto</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span> Arequipa, Perú</span>
+</div>
+<div class="inline-block bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-lg font-label-md text-label-md mb-4">
+                            S/ 8,500 - S/ 11,000 mensual
+                        </div>
+<div class="bg-surface-container-low rounded-lg p-4 mb-6 border-l-4 border-primary">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="text-on-surface">¿Por qué?</strong> Tu experiencia en React y Tailwind coincide al 100% con los requisitos técnicos.
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2 px-4 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors">Descartar</button>
+<button class="flex-[2] py-2 px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">Guardar</button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-[10px] p-6 hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface group-hover:text-primary transition-colors">Analista de Sistemas</h3>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">Empresa Local SAC</p>
+</div>
+<span class="bg-surface-container-high text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-label-sm">
+                                88% match
+                            </span>
+</div>
+<div class="flex flex-wrap gap-4 mt-3 mb-4 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="apartment">apartment</span> Presencial</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span> Arequipa, Perú</span>
+</div>
+<div class="inline-block bg-surface-container-high text-on-surface-variant px-3 py-1 rounded-lg font-label-md text-label-md mb-4">
+                            Salario no especificado
+                        </div>
+<div class="bg-surface-container-low rounded-lg p-4 mb-6 border-l-4 border-outline">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="text-on-surface">¿Por qué?</strong> Buscan un perfil con formación en Ingeniería de Sistemas como la tuya.
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2 px-4 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors">Descartar</button>
+<button class="flex-[2] py-2 px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">Guardar</button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-[10px] p-6 hover:shadow-md transition-shadow group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface group-hover:text-primary transition-colors">UX/UI Designer Junior</h3>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">Startup Global</p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm">
+                                92% match
+                            </span>
+</div>
+<div class="flex flex-wrap gap-4 mt-3 mb-4 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="shuffle">shuffle</span> Híbrido</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span> Lima, Perú</span>
+</div>
+<div class="inline-block bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-lg font-label-md text-label-md mb-4">
+                            S/ 3,500 - S/ 4,500 mensual
+                        </div>
+<div class="bg-surface-container-low rounded-lg p-4 mb-6 border-l-4 border-primary">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="text-on-surface">¿Por qué?</strong> Tu portafolio demuestra las habilidades de diseño visual que solicitan.
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-2 px-4 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors">Descartar</button>
+<button class="flex-[2] py-2 px-4 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">Guardar</button>
+</div>
+</article>
+</div>
+</div>
+<!-- Sidebar (Impact Panel) -->
+<aside class="md:col-span-4 space-y-6 sticky top-24">
+<section class="bg-surface-container-lowest border border-outline-variant rounded-[10px] overflow-hidden">
+<div class="bg-primary p-4">
+<h2 class="font-title-lg text-title-lg text-on-primary">Impacto de tu perfil</h2>
+</div>
+<div class="p-6">
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                            De 120 correos procesados, encontramos <span class="font-bold text-on-surface">8 oportunidades</span> ideales para ti.
+                        </p>
+<div class="space-y-4 mb-8">
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+<span class="font-label-md text-label-md text-on-surface-variant">Eficiencia de filtrado</span>
+<span class="font-bold text-primary text-body-md">92%</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg">
+<span class="font-label-md text-label-md text-on-surface-variant">Nuevas hoy</span>
+<span class="font-bold text-secondary text-body-md">5</span>
+</div>
+</div>
+<div>
+<h4 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-4">Habilidades en demanda</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-high rounded-full font-label-md text-label-md text-on-surface hover:bg-primary-container hover:text-on-primary-container transition-colors cursor-default">React.js</span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full font-label-md text-label-md text-on-surface hover:bg-primary-container hover:text-on-primary-container transition-colors cursor-default">TypeScript</span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full font-label-md text-label-md text-on-surface hover:bg-primary-container hover:text-on-primary-container transition-colors cursor-default">Cloud Architecture</span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full font-label-md text-label-md text-on-surface hover:bg-primary-container hover:text-on-primary-container transition-colors cursor-default">Node.js</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Recommendation Card -->
+<div class="bg-tertiary-fixed p-6 rounded-[10px] border border-outline-variant relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-title-lg text-title-lg text-on-tertiary-fixed mb-2">Optimiza tu CV</h3>
+<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant mb-4">Hemos notado que falta "AWS" en tu perfil. Añadirlo aumentaría tus matches en un 15%.</p>
+<button class="font-label-md text-label-md text-on-tertiary-fixed underline font-bold">Ver recomendaciones</button>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-on-tertiary-fixed/10 group-hover:rotate-12 transition-transform" data-icon="lightbulb">lightbulb</span>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline mt-12">
+<div class="flex flex-col md:flex-row justify-between items-center py-8 px-edge-margin-desktop max-w-container-max mx-auto w-full">
+<span class="font-label-md text-label-md font-bold text-on-surface dark:text-inverse-on-surface mb-4 md:mb-0">CONECTA UNSA</span>
+<div class="flex gap-8 mb-4 md:mb-0">
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Privacidad</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Términos</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim underline transition-all" href="#">Contacto</a>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant dark:text-surface-variant">© 2024 CONECTA UNSA. Todos los derechos reservados.</p>
+</div>
+</footer>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('article').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Toggle Active State logic
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => {
+                    l.classList.remove('text-primary', 'border-b-2', 'border-primary', 'font-bold');
+                    l.classList.add('text-on-surface-variant');
+                });
+                link.classList.add('text-primary', 'border-b-2', 'border-primary', 'font-bold');
+                link.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

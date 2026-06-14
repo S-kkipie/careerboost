@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareerBoost UNSA | Tu bolsa de trabajo sin ruido</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#62df7d",
+                        "outline": "#737686",
+                        "tertiary-fixed": "#ffdcc3",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "tertiary": "#824500",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-surface": "#2f3131",
+                        "secondary": "#006e2d",
+                        "on-tertiary-container": "#ffede1",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f3f3f3",
+                        "on-surface-variant": "#434655",
+                        "surface-variant": "#e2e2e2",
+                        "on-surface": "#1a1c1c",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#0053db",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#a65900",
+                        "surface-dim": "#dadada",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-container": "#007230",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "background": "#f9f9f9",
+                        "secondary-fixed": "#7ffc97",
+                        "on-tertiary-fixed": "#2f1500",
+                        "on-background": "#1a1c1c",
+                        "on-secondary-fixed-variant": "#005320",
+                        "on-secondary-fixed": "#002109",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-primary-container": "#eeefff",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface": "#f9f9f9",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "surface-container-high": "#e8e8e8",
+                        "secondary-container": "#7cf994",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#004ac6",
+                        "surface-bright": "#f9f9f9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "10px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "edge-margin-mobile": "20px",
+                        "section-gap": "64px",
+                        "edge-margin-desktop": "48px",
+                        "container-max": "1100px",
+                        "stack-gap": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .flat-card {
+            background-color: #ffffff;
+            border: 1px solid #EBEBEB;
+            border-radius: 10px;
+            transition: border-color 0.2s ease;
+        }
+        .flat-card:hover {
+            border-color: #2563EB;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopNavBar (Shared Component Identity) -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-edge-margin-mobile md:px-edge-margin-desktop h-16 bg-surface/90 backdrop-blur-md border-b border-outline-variant">
+<div class="font-title-lg text-title-lg font-bold text-primary">CareerBoost</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="bg-primary-container text-on-primary px-6 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                Entrar
+            </button>
+</div>
+</nav>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative min-h-[716px] flex flex-col items-center justify-center px-edge-margin-mobile md:px-edge-margin-desktop py-section-gap overflow-hidden">
+<!-- Background Decoration (Subtle institutional vibe) -->
+<div class="absolute inset-0 -z-10 opacity-5">
+<div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#2563EB_0%,transparent_50%)]"></div>
+</div>
+<div class="max-w-container-max w-full text-center space-y-stack-gap">
+<h1 class="font-display-lg text-[36px] md:text-display-lg leading-tight text-on-surface tracking-tight">
+                    Tu bolsa de trabajo UNSA, <span class="text-primary">sin ruido</span>
+</h1>
+<p class="font-body-lg text-body-md md:text-body-lg text-on-surface-variant max-w-3xl mx-auto">
+                    Recibe oportunidades laborales personalizadas con transparencia salarial directamente desde tu Gmail (acceso solo-lectura).
+                </p>
+<div class="pt-8">
+<button class="inline-flex items-center gap-3 bg-on-background text-on-primary-container px-8 py-4 rounded-lg font-label-md text-label-md shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZkdOHPzp9XJayUZKvl-Vs6IZ2uX4ugibSWBDZvxvP93xc3YTKp1a3cXOgqYaVHBfm6VLG_DhmjO3Cm91r0HlcSoG8vIHrwjGbr_PrCBsvTIorRJnbIr5tEQhrB4ChqRdW6CGhiPUw3hO6z6-9bhVZYXURG8xeSenrQq4w1ngArmIJ0vMhYyPWKiArjw_zahgXQhX76ym8F89lW3QdtGK74uw9AbkVhJzcM_MpcYlvcGO_X6_-HYo-yFSM1B67nKFCY3ws3T1IaFa8"/>
+                        Continuar con Google
+                    </button>
+</div>
+</div>
+<!-- Dashboard Mockup/Visual -->
+<div class="mt-16 w-full max-w-container-max relative">
+<div class="flat-card p-6 shadow-xl relative overflow-hidden">
+<img class="w-full rounded-lg grayscale-[20%]" data-alt="A sleek and professional software interface showing a job dashboard for a university recruitment platform. The UI is clean with white cards, institutional blue accents, and clear data visualizations representing job matching scores. The lighting is bright and even, conveying a sense of institutional trust and modern efficiency in a corporate academic setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrAusGsEv4RSOajhrjyhThmHjlQEIVqC8mZicjJ2YEKkC6ssxim9ce4eNRMH_P50s8CPbmCk8FJPTlIjHyk4bhiVPrSc8icnHGlCJeo7XRWLnqnZZEorGs4x8Lwc_2AJb0z2cjRyDh323kT41UkuilsvYrCPnP8PdeHOF27lW2ZaNN8TEv3A90Vn2lTuJ3bnEKdT-ew72MdIDDWXE0196g1_EM57jk6xHwQ0uBm3s0XBypIgE56MjcnK96LnFeHxSlVJ2D03Py4djE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent"></div>
+</div>
+</div>
+</section>
+<!-- Impact Band -->
+<section class="bg-surface-container-low py-16 border-y border-outline-variant">
+<div class="max-w-container-max mx-auto px-edge-margin-mobile md:px-edge-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Stat 1 -->
+<div class="flat-card p-8 text-center space-y-2">
+<div class="text-primary font-display-lg text-headline-lg">100+</div>
+<p class="font-label-md text-on-surface-variant">correos/mes procesados</p>
+</div>
+<!-- Stat 2 -->
+<div class="flat-card p-8 text-center space-y-2">
+<div class="text-primary font-display-lg text-headline-lg">27%</div>
+<p class="font-label-md text-on-surface-variant">ruido eliminado de tu bandeja</p>
+</div>
+<!-- Stat 3 -->
+<div class="flat-card p-8 text-center space-y-2">
+<div class="text-secondary font-display-lg text-headline-lg">90%</div>
+<p class="font-label-md text-on-surface-variant">sin salario visible → lo mostramos</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Cómo Funciona -->
+<section class="py-section-gap px-edge-margin-mobile md:px-edge-margin-desktop">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Cómo funciona</h2>
+<div class="w-16 h-1 bg-primary mx-auto mt-4 rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Connector line (Desktop only) -->
+<div class="hidden md:block absolute top-12 left-1/4 right-1/4 h-[1px] bg-outline-variant -z-10"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-[32px]">mail</span>
+</div>
+<h3 class="font-title-lg text-title-lg">1. Conecta tu Gmail</h3>
+<p class="font-body-md text-on-surface-variant">Acceso seguro solo-lectura para encontrar convocatorias institucionales.</p>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-[32px]">description</span>
+</div>
+<h3 class="font-title-lg text-title-lg">2. Sube tu CV</h3>
+<p class="font-body-md text-on-surface-variant">Subimos y analizamos tu perfil profesional para encontrar el match perfecto.</p>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-[32px]">payments</span>
+</div>
+<h3 class="font-title-lg text-title-lg">3. Recibe matches</h3>
+<p class="font-body-md text-on-surface-variant">Matches directos con explicación de por qué encajas y salario transparente.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Final -->
+<section class="py-section-gap bg-primary text-on-primary">
+<div class="max-w-container-max mx-auto px-edge-margin-mobile md:px-edge-margin-desktop text-center space-y-stack-gap">
+<h2 class="font-headline-lg text-headline-lg">¿Listo para impulsar tu carrera?</h2>
+<p class="font-body-lg text-on-primary/80 max-w-2xl mx-auto">Únete a la comunidad de la UNSA y descubre oportunidades diseñadas para tu perfil profesional.</p>
+<div class="pt-6">
+<button class="bg-surface text-primary px-10 py-4 rounded-lg font-label-md text-label-md hover:bg-surface-bright transition-all shadow-lg active:scale-95">
+                        Empezar ahora
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component Identity) -->
+<footer class="w-full py-12 px-edge-margin-mobile md:px-edge-margin-desktop flex flex-col items-center gap-stack-gap text-center bg-surface-container-low border-t border-outline-variant">
+<div class="font-title-lg text-title-lg font-bold text-on-surface">CareerBoost UNSA</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Protección de datos</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Términos</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contacto</a>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-4 opacity-75">
+            © 2024 CareerBoost UNSA. Acceso Gmail solo-lectura.
+        </p>
+</footer>
+<script>
+        // Simple Micro-interactions
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('opacity-80');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('opacity-80');
+            });
+        });
+
+        // Sticky Header Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 20) {
+                nav.classList.add('shadow-sm');
+            } else {
+                nav.classList.remove('shadow-sm');
+            }
+        });
+    </script>
+</body></html>

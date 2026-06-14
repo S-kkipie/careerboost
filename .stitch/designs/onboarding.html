@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Configura tu cuenta - CareerBoost CONECTA UNSA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffb77d",
+                      "outline-variant": "#EBEBEB",
+                      "on-secondary-fixed-variant": "#005320",
+                      "surface": "#f9f9f9",
+                      "inverse-on-surface": "#f1f1f1",
+                      "on-error": "#ffffff",
+                      "tertiary": "#824500",
+                      "on-primary-container": "#eeefff",
+                      "surface-tint": "#0053db",
+                      "error": "#ba1a1a",
+                      "background": "#f9f9f9",
+                      "surface-dim": "#dadada",
+                      "surface-variant": "#e2e2e2",
+                      "primary-container": "#2563eb",
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#eeeeee",
+                      "inverse-primary": "#b4c5ff",
+                      "primary-fixed": "#dbe1ff",
+                      "secondary-fixed-dim": "#62df7d",
+                      "surface-container-highest": "#e2e2e2",
+                      "surface-container-high": "#e8e8e8",
+                      "on-secondary-fixed": "#002109",
+                      "surface-container-low": "#f3f3f3",
+                      "primary": "#2563EB",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-tertiary-fixed": "#2f1500",
+                      "on-primary": "#ffffff",
+                      "on-background": "#1a1c1c",
+                      "secondary-fixed": "#7ffc97",
+                      "on-error-container": "#93000a",
+                      "on-surface-variant": "#434655",
+                      "on-primary-fixed": "#00174b",
+                      "on-secondary-container": "#007230",
+                      "secondary-container": "#7cf994",
+                      "secondary": "#006e2d",
+                      "on-tertiary-container": "#ffede1",
+                      "inverse-surface": "#2f3131",
+                      "tertiary-fixed": "#ffdcc3",
+                      "surface-bright": "#f9f9f9",
+                      "outline": "#737686",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#a65900",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "on-tertiary-fixed-variant": "#6e3900",
+                      "on-surface": "#1a1c1c",
+                      "on-tertiary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "10px",
+                      "lg": "10px",
+                      "xl": "12px",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "16px",
+                      "edge-margin-desktop": "48px",
+                      "edge-margin-mobile": "20px",
+                      "section-gap": "64px",
+                      "gutter": "24px",
+                      "container-max": "1100px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .step-active { color: #004ac6; }
+        .step-complete { color: #006e2d; }
+        .step-upcoming { color: #737686; }
+        
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex flex-col font-body-md text-on-surface">
+<!-- Top Navigation Anchor -->
+<header class="w-full top-0 sticky bg-surface border-b border-outline-variant z-50">
+<div class="flex justify-between items-center h-16 px-edge-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary">CONECTA UNSA</span>
+<span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold tracking-wider">CAREERBOOST</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Directorio</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Recursos</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Ayuda</a>
+</nav>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+                Iniciar Sesión
+            </button>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center py-12 px-edge-margin-mobile">
+<div class="w-full max-w-[640px]">
+<!-- Onboarding Header -->
+<div class="text-center mb-10">
+<h1 class="font-headline-lg text-headline-lg mb-6">Configura tu cuenta</h1>
+<!-- Progress Indicator -->
+<div class="flex items-center justify-between relative px-2">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant -translate-y-1/2 -z-10"></div>
+<!-- Step 1: Active/Complete -->
+<div class="flex flex-col items-center bg-background px-2">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm border-4 border-background">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-label-sm text-label-sm mt-2 text-primary">Conexión</span>
+</div>
+<!-- Step 2: Current -->
+<div class="flex flex-col items-center bg-background px-2">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm border-4 border-background ring-2 ring-primary ring-offset-2">
+<span class="font-bold">2</span>
+</div>
+<span class="font-label-sm text-label-sm mt-2 text-on-surface">Perfil</span>
+</div>
+<!-- Step 3: Upcoming -->
+<div class="flex flex-col items-center bg-background px-2">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-outline shadow-sm border-4 border-background">
+<span class="font-bold">3</span>
+</div>
+<span class="font-label-sm text-label-sm mt-2 text-outline">Matches</span>
+</div>
+</div>
+</div>
+<div class="space-y-stack-gap">
+<!-- Card 1: Gmail (Completed) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex items-start gap-4 transition-all hover:shadow-sm">
+<div class="bg-secondary-container text-on-secondary-container p-3 rounded-lg">
+<span class="material-symbols-outlined text-[28px]">mail</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-center mb-1">
+<h3 class="font-title-lg text-title-lg">Conecta tu Gmail</h3>
+<span class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Conectado
+                            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Leemos solo los correos de la bolsa de trabajo (acceso de solo lectura).</p>
+<div class="mt-3 flex items-center gap-2">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-outline-variant">
+<img alt="Usuario" data-alt="A professional headshot of a young university student with a friendly expression, set against a clean, out-of-focus academic background. The lighting is bright and natural, reflecting the institutional blue and white color palette of the UNSA career platform. The style is crisp and corporate, conveying trust and professional readiness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbnnOagAGzRH_OlbhmTVMEQn4H0VS21VJwssa78w372lVBTFY6YRw_Mis-VvyHvI7xsDViBfiwLa5dHTcZhoUQq2oz6DDtb4MKN_t2YlPyhSYqxw0tzwTY-iYyjbuDSnDF_VehWYSGYuFeWbrvJQ27IxPtPrGJqMek4XmRNyj7A6wqCONTkZzAAMA29FJ2z-KgIV4p7ay2cYW9ofbb2I9FzryNTrqZ7eW7LtRB8NtYhVokaJNrYyhqIyQJF8KoCGgXXQrQgRZ_xdmf"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">alumno.unsa@gmail.com</span>
+</div>
+</div>
+</section>
+<!-- Card 2: CV (Active State) -->
+<section class="bg-surface-container-lowest border-2 border-primary rounded-lg p-6 transition-all shadow-md">
+<div class="flex items-start gap-4 mb-4">
+<div class="bg-primary-container text-on-primary-container p-3 rounded-lg">
+<span class="material-symbols-outlined text-[28px]">description</span>
+</div>
+<div class="flex-grow">
+<h3 class="font-title-lg text-title-lg mb-1">Sube tu CV (PDF)</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Extraemos tu perfil profesional para personalizar tus matches.</p>
+</div>
+</div>
+<!-- Drag & Drop Zone -->
+<div class="border-2 border-dashed border-outline-variant rounded-lg p-8 flex flex-col items-center justify-center bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors group" id="drop-zone">
+<span class="material-symbols-outlined text-outline text-[40px] mb-3 group-hover:text-primary transition-colors">cloud_upload</span>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Arrastra tu archivo aquí o</p>
+<button class="bg-white border border-outline-variant text-on-surface px-6 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container-high transition-colors shadow-sm">
+                            Elegir archivo
+                        </button>
+<p class="mt-4 font-label-sm text-label-sm text-outline">Solo archivos PDF (máx. 5MB)</p>
+</div>
+<!-- Processing State (Hidden by default, shown via JS simulation) -->
+<div class="hidden border border-outline-variant rounded-lg p-8 flex flex-col items-center justify-center bg-surface-container-low" id="processing-state">
+<div class="relative w-12 h-12 mb-4">
+<div class="absolute inset-0 border-4 border-primary-container rounded-full opacity-25"></div>
+<div class="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
+</div>
+<p class="font-body-md text-body-md font-semibold text-primary animate-pulse">Analizando tu CV...</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Nuestra IA está extrayendo tus habilidades.</p>
+</div>
+<!-- Success State (Hidden by default) -->
+<div class="hidden border border-secondary text-secondary rounded-lg p-6 flex items-center justify-between bg-secondary-container/20" id="success-state">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-label-md text-label-md font-bold">CV procesado con éxito</p>
+<p class="font-label-sm text-label-sm">CV_Juan_Perez_2024.pdf</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</section>
+<!-- Card 3: Matches (Disabled/Upcoming) -->
+<section class="bg-surface border border-outline-variant rounded-lg p-6 opacity-60 grayscale pointer-events-none transition-all">
+<div class="flex items-start gap-4 mb-6">
+<div class="bg-surface-container-high text-outline p-3 rounded-lg">
+<span class="material-symbols-outlined text-[28px]">insights</span>
+</div>
+<div class="flex-grow">
+<h3 class="font-title-lg text-title-lg mb-1">Sincroniza y genera matches</h3>
+<div class="flex gap-4 mt-2">
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                                    12 correos nuevos
+                                </span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
+                                    5 ofertas encontradas
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row gap-3">
+<button class="flex-1 bg-white border border-outline-variant text-on-surface-variant px-4 py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+                            Sincronizar correos
+                        </button>
+<button class="flex-1 bg-primary text-on-primary px-4 py-3 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+                            Generar matches
+                        </button>
+</div>
+</section>
+<!-- Help & Skip -->
+<div class="flex justify-between items-center pt-4">
+<button class="text-on-surface-variant hover:text-primary text-label-md font-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">help</span>
+                        Necesito ayuda
+                    </button>
+<button class="text-outline hover:text-on-surface text-label-md font-label-md">
+                        Configurar después
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Anchor -->
+<footer class="w-full mt-auto bg-surface-container-low border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center py-8 px-edge-margin-desktop max-w-container-max mx-auto gap-4">
+<span class="font-title-lg text-title-lg font-bold text-on-surface">CONECTA UNSA</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant order-last md:order-none">
+                © 2024 CONECTA UNSA - Plataforma de Empleabilidad Universitaria
+            </p>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Términos</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contacto</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction simulation for the CV upload
+        const dropZone = document.getElementById('drop-zone');
+        const processingState = document.getElementById('processing-state');
+        const successState = document.getElementById('success-state');
+        const nextStepCard = document.querySelector('section.opacity-60');
+
+        dropZone.addEventListener('click', () => {
+            // Step 1: Hide dropzone, show processing
+            dropZone.classList.add('hidden');
+            processingState.classList.remove('hidden');
+
+            // Step 2: After 3 seconds, show success
+            setTimeout(() => {
+                processingState.classList.add('hidden');
+                successState.classList.remove('hidden');
+                
+                // Step 3: Activate next card
+                if (nextStepCard) {
+                    nextStepCard.classList.remove('opacity-60', 'grayscale', 'pointer-events-none');
+                    nextStepCard.classList.add('border-primary', 'shadow-md');
+                }
+            }, 3000);
+        });
+    </script>
+</body></html>
