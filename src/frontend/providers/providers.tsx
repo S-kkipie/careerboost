@@ -1,11 +1,12 @@
 "use client";
 
-import { AuthProvider as AuthUIProvider } from "@better-auth-ui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
+import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { authClient } from "@/frontend/auth/auth";
+import { AuthProvider as AuthUIProvider } from "@/frontend/components/auth/auth-provider";
 import { ErrorBoundary } from "@/frontend/components/error-boundary";
 import { Toaster } from "@/frontend/components/ui/sonner";
 import { TooltipProvider } from "@/frontend/components/ui/tooltip";
@@ -13,6 +14,22 @@ import { apiClient, EdenProvider } from "@/frontend/lib/eden";
 import { spanishLocalization } from "@/frontend/lib/localization";
 import { getQueryClient } from "@/frontend/lib/query-client";
 import { ThemeProvider } from "./theme-provider";
+
+function AuthLink({
+    href,
+    className,
+    children,
+}: {
+    href: string;
+    className?: string;
+    children?: ReactNode;
+}) {
+    return (
+        <NextLink href={href} className={className}>
+            {children}
+        </NextLink>
+    );
+}
 
 export default function Providers({ children }: PropsWithChildren) {
     const queryClient = getQueryClient();
@@ -49,6 +66,7 @@ export default function Providers({ children }: PropsWithChildren) {
                                     }
                                     localization={spanishLocalization}
                                     queryClient={queryClient}
+                                    Link={AuthLink}
                                 >
                                     {children}
                                 </AuthUIProvider>
