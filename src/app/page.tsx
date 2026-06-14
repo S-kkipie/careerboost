@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { authClient } from "@/frontend/auth/auth";
+import { CtaBand } from "@/frontend/components/landing/cta-band";
 import { Hero } from "@/frontend/components/landing/hero";
 import { HowItWorks } from "@/frontend/components/landing/how-it-works";
 import { ImpactBand } from "@/frontend/components/landing/impact-band";
@@ -35,6 +36,7 @@ export default function Home() {
                 <Hero />
                 <ImpactBand />
                 <HowItWorks />
+                <CtaBand />
             </main>
             <LandingFooter />
         </div>

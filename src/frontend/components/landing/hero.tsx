@@ -18,7 +18,7 @@ export function Hero() {
                 </h1>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
                     Recibe oportunidades laborales personalizadas con
-                    transparencia salarial directamente desde tu Gmail{"·"}
+                    transparencia salarial directamente desde tu Gmail{" "}
                     <span className="font-medium">(acceso solo-lectura)</span>.
                 </p>
                 <div className="pt-6">

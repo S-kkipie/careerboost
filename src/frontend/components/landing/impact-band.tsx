@@ -26,7 +26,7 @@ export function ImpactBand() {
                     {stats.map((stat) => (
                         <Card
                             key={stat.label}
-                            className="flex-col items-center justify-center p-8 text-center gap-2 hover:border-primary transition-colors"
+                            className="items-center justify-center p-8 text-center gap-2 hover:border-primary transition-colors"
                         >
                             <div className={`text-4xl font-bold ${stat.color}`}>
                                 {stat.value}
