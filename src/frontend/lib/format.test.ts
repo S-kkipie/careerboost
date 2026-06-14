@@ -3,6 +3,7 @@ import {
     buildImpactStats,
     errorCode,
     errorMessage,
+    formatDeadline,
     formatMatchPct,
     formatSalaryBadge,
     modalidadLabel,
@@ -98,6 +99,30 @@ describe("buildImpactStats", () => {
             { label: "Empleos reales", value: 18 },
             { label: "Duplicados quitados", value: 4 },
         ]);
+    });
+});
+
+describe("formatDeadline", () => {
+    it("returns null when there is no deadline", () => {
+        expect(formatDeadline(null, "2026-06-14")).toBeNull();
+    });
+    it("flags a past deadline as urgent (cerrada)", () => {
+        expect(formatDeadline("2026-06-10", "2026-06-14")).toEqual({
+            label: "Convocatoria cerrada",
+            urgent: true,
+        });
+    });
+    it("flags today as urgent (cierra hoy)", () => {
+        expect(formatDeadline("2026-06-14", "2026-06-14")).toEqual({
+            label: "Cierra hoy",
+            urgent: true,
+        });
+    });
+    it("formats a future deadline as a day + month", () => {
+        expect(formatDeadline("2026-06-25", "2026-06-14")).toEqual({
+            label: "Cierra 25 jun",
+            urgent: false,
+        });
     });
 });
 

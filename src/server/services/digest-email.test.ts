@@ -18,6 +18,7 @@ function makeItem(over: Partial<FeedItem["job"]> = {}): FeedItem {
             salario_periodo: "mes",
             salario_explicito: true,
             apply_link: "https://jobs.example/123",
+            deadline: null,
             ...over,
         },
         status: "new",

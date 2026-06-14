@@ -83,6 +83,7 @@ export async function getDigest(
             salarioPeriodo: jobs.salarioPeriodo,
             salarioExplicito: jobs.salarioExplicito,
             applyLink: jobs.applyLink,
+            deadline: jobs.deadline,
         })
         .from(matches)
         .innerJoin(jobs, eq(matches.jobId, jobs.id))

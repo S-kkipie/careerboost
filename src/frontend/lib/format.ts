@@ -85,6 +85,46 @@ export function buildImpactStats(run: ImpactRun | null): ImpactStat[] | null {
     ];
 }
 
+const MESES_ES = [
+    "ene",
+    "feb",
+    "mar",
+    "abr",
+    "may",
+    "jun",
+    "jul",
+    "ago",
+    "sep",
+    "oct",
+    "nov",
+    "dic",
+];
+
+export interface DeadlineBadge {
+    label: string;
+    urgent: boolean;
+}
+
+// `deadline` and `today` are YYYY-MM-DD strings; lexicographic compare equals
+// chronological for that format. Pure — the caller supplies `today`.
+export function formatDeadline(
+    deadline: string | null,
+    today: string,
+): DeadlineBadge | null {
+    if (!deadline) {
+        return null;
+    }
+    if (deadline < today) {
+        return { label: "Convocatoria cerrada", urgent: true };
+    }
+    if (deadline === today) {
+        return { label: "Cierra hoy", urgent: true };
+    }
+    const [, month, day] = deadline.split("-");
+    const mes = MESES_ES[Number(month) - 1] ?? "";
+    return { label: `Cierra ${Number(day)} ${mes}`.trim(), urgent: false };
+}
+
 // Eden returns { data, error } on non-2xx; our hooks throw `error`, whose body
 // is in `.value`. Narrow with typeof + `in` guards (no casts).
 export function errorCode(error: unknown): string | null {

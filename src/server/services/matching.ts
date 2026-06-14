@@ -201,6 +201,7 @@ export interface FeedItem {
         salario_periodo: string | null;
         salario_explicito: boolean;
         apply_link: string | null;
+        deadline: string | null;
     };
     status: string;
 }
@@ -220,6 +221,7 @@ export interface FeedRow {
     salarioPeriodo: string | null;
     salarioExplicito: boolean;
     applyLink: string | null;
+    deadline: string | null;
 }
 
 export function mapFeedRow(r: FeedRow): FeedItem {
@@ -238,6 +240,7 @@ export function mapFeedRow(r: FeedRow): FeedItem {
             salario_periodo: r.salarioPeriodo,
             salario_explicito: r.salarioExplicito,
             apply_link: r.applyLink,
+            deadline: r.deadline,
         },
         status: r.status,
     };
@@ -280,6 +283,7 @@ export async function getFeed(
             salarioPeriodo: jobs.salarioPeriodo,
             salarioExplicito: jobs.salarioExplicito,
             applyLink: jobs.applyLink,
+            deadline: jobs.deadline,
         })
         .from(matches)
         .innerJoin(jobs, eq(matches.jobId, jobs.id))

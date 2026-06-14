@@ -2,6 +2,7 @@ import {
     Bookmark,
     Briefcase,
     Building2,
+    CalendarClock,
     MapPin,
     Sparkles,
     X,
@@ -16,6 +17,8 @@ import {
 } from "@/frontend/components/ui/card";
 import { Spinner } from "@/frontend/components/ui/spinner";
 import {
+    type DeadlineBadge as DeadlineBadgeType,
+    formatDeadline,
     formatMatchPct,
     formatSalaryBadge,
     modalidadLabel,
@@ -32,6 +35,7 @@ export interface MatchCardJob {
     salario_periodo: string | null;
     salario_explicito: boolean;
     apply_link: string | null;
+    deadline: string | null;
 }
 
 export interface MatchCardItem {
@@ -56,6 +60,11 @@ export function MatchCard({
     isPending,
 }: MatchCardProps) {
     const salary = formatSalaryBadge(item.job);
+    const today = new Date().toISOString().slice(0, 10);
+    const deadline: DeadlineBadgeType | null = formatDeadline(
+        item.job.deadline,
+        today,
+    );
     const isSaved = item.status === "saved";
 
     return (
@@ -95,8 +104,18 @@ export function MatchCard({
                     ) : null}
                 </div>
 
-                <div className="mt-2">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Badge variant={salary.variant}>{salary.label}</Badge>
+                    {deadline ? (
+                        <Badge
+                            variant={
+                                deadline.urgent ? "destructive" : "outline"
+                            }
+                        >
+                            <CalendarClock className="size-3" />
+                            {deadline.label}
+                        </Badge>
+                    ) : null}
                 </div>
             </CardHeader>
 
