@@ -199,9 +199,11 @@ import { user } from "@/server/drizzle/schemas/auth-schema";
 import { jobs } from "@/server/drizzle/schemas/jobs";
 import { matches } from "@/server/drizzle/schemas/matches";
 import {
+    getFeed,
     persistMatches,
     retrieveCandidates,
     type ScoredMatch,
+    setMatchStatus,
 } from "@/server/services/matching";
 
 const T3_USER = "spec05-retrieval-test-user";
@@ -354,5 +356,134 @@ describe("retrieveCandidates + persistMatches", () => {
         expect(rows[0]?.explanation).toBe("v2");
         // Status preserved.
         expect(rows[0]?.status).toBe("saved");
+    });
+});
+
+const T4_USER = "spec05-feed-test-user";
+
+describe("getFeed + setMatchStatus", () => {
+    afterAll(async () => {
+        await db.delete(user).where(eq(user.id, T4_USER));
+    });
+
+    it("returns only above-threshold, non-dismissed matches ordered by rerank_score, and applies filters", async () => {
+        await db.insert(user).values({
+            id: T4_USER,
+            name: "Feed Test",
+            email: "spec05-feed-test@example.com",
+            emailVerified: false,
+        });
+
+        // Three jobs: high (with salary), mid (no salary), low (below threshold).
+        const inserted = await db
+            .insert(jobs)
+            .values([
+                {
+                    userId: T4_USER,
+                    gmailMsgId: "f-high",
+                    dedupeHash: "f-high",
+                    titulo: "High",
+                    modalidad: "remoto",
+                    ubicacion: "Arequipa",
+                    salarioExplicito: true,
+                    embedding: vec(0),
+                },
+                {
+                    userId: T4_USER,
+                    gmailMsgId: "f-mid",
+                    dedupeHash: "f-mid",
+                    titulo: "Mid",
+                    modalidad: "presencial",
+                    ubicacion: "Lima",
+                    salarioExplicito: false,
+                    embedding: vec(1),
+                },
+                {
+                    userId: T4_USER,
+                    gmailMsgId: "f-low",
+                    dedupeHash: "f-low",
+                    titulo: "Low",
+                    modalidad: "remoto",
+                    ubicacion: "Arequipa",
+                    salarioExplicito: true,
+                    embedding: vec(2),
+                },
+            ])
+            .returning({ id: jobs.id, titulo: jobs.titulo });
+
+        const idOf = (t: string) =>
+            inserted.find((j) => j.titulo === t)?.id ?? "";
+
+        await persistMatches(T4_USER, [
+            {
+                jobId: idOf("High"),
+                score: 0.9,
+                rerankScore: 90,
+                explanation: "alta",
+                flags: { skills_match: true, salario_transparente: true },
+            },
+            {
+                jobId: idOf("Mid"),
+                score: 0.7,
+                rerankScore: 70,
+                explanation: "media",
+                flags: { skills_match: true, salario_transparente: false },
+            },
+            {
+                jobId: idOf("Low"),
+                score: 0.2,
+                rerankScore: 20,
+                explanation: "baja",
+                flags: { skills_match: false, salario_transparente: true },
+            },
+        ]);
+
+        // No filters: High (90) and Mid (70) pass threshold (>=50); Low (20) hidden.
+        const all = await getFeed(T4_USER, {});
+        expect(all.map((m) => m.job.titulo)).toEqual(["High", "Mid"]);
+        expect(all[0]?.rerank_score).toBe(90);
+        expect(all[0]?.job.salario_explicito).toBe(true);
+
+        // solo_con_salario: only jobs with explicit salary above threshold -> High.
+        const salaried = await getFeed(T4_USER, { soloConSalario: true });
+        expect(salaried.map((m) => m.job.titulo)).toEqual(["High"]);
+
+        // modalidad filter.
+        const remoto = await getFeed(T4_USER, { modalidad: "remoto" });
+        expect(remoto.map((m) => m.job.titulo)).toEqual(["High"]);
+
+        // ubicacion filter (substring, case-insensitive).
+        const lima = await getFeed(T4_USER, { ubicacion: "lima" });
+        expect(lima.map((m) => m.job.titulo)).toEqual(["Mid"]);
+    });
+
+    it("sets a match status scoped to the user and hides dismissed from the feed", async () => {
+        const [high] = await db
+            .select({ id: matches.id, jobTitulo: jobs.titulo })
+            .from(matches)
+            .innerJoin(jobs, eq(matches.jobId, jobs.id))
+            .where(and(eq(matches.userId, T4_USER), eq(jobs.titulo, "High")));
+        const matchId = high?.id ?? "";
+
+        const updated = await setMatchStatus(T4_USER, matchId, "dismissed");
+        expect(updated?.status).toBe("dismissed");
+
+        // Dismissed disappears from the feed; Mid remains.
+        const feed = await getFeed(T4_USER, {});
+        expect(feed.map((m) => m.job.titulo)).toEqual(["Mid"]);
+    });
+
+    it("returns null when updating a match that does not belong to the user", async () => {
+        const [mid] = await db
+            .select({ id: matches.id })
+            .from(matches)
+            .innerJoin(jobs, eq(matches.jobId, jobs.id))
+            .where(and(eq(matches.userId, T4_USER), eq(jobs.titulo, "Mid")));
+        const result = await setMatchStatus(
+            "spec05-someone-else",
+            mid?.id ?? "",
+            "saved",
+        );
+        expect(result).toBeNull();
     });
 });

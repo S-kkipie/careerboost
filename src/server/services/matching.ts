@@ -1,11 +1,13 @@
 import {
     and,
     cosineDistance,
+    desc,
     eq,
     gte,
     ilike,
     isNotNull,
     isNull,
+    ne,
     or,
     sql,
 } from "drizzle-orm";
@@ -16,7 +18,7 @@ import type {
 } from "@/server/ai/rerank";
 import { db } from "@/server/drizzle/db";
 import { jobs } from "@/server/drizzle/schemas/jobs";
-import { matches } from "@/server/drizzle/schemas/matches";
+import { type Match, matches } from "@/server/drizzle/schemas/matches";
 
 export const RETRIEVAL_LIMIT = 30;
 export const SALARY_BOOST = 0.05;
@@ -177,6 +179,109 @@ export async function retrieveCandidates(
         .where(and(...conditions))
         .orderBy(distance)
         .limit(RETRIEVAL_LIMIT);
+}
+
+export interface FeedFilters {
+    soloConSalario?: boolean;
+    modalidad?: string;
+    ubicacion?: string;
+}
+
+export interface FeedItem {
+    id: string;
+    rerank_score: number | null;
+    explanation: string | null;
+    job: {
+        titulo: string | null;
+        empresa: string | null;
+        modalidad: string | null;
+        ubicacion: string | null;
+        salario_min: number | null;
+        salario_max: number | null;
+        moneda: string | null;
+        salario_periodo: string | null;
+        salario_explicito: boolean;
+        apply_link: string | null;
+    };
+    status: string;
+}
+
+// Server-side feed: above-threshold, non-dismissed matches for the user,
+// ordered by rerank_score desc, with optional salary/modalidad/ubicacion filters.
+export async function getFeed(
+    userId: string,
+    filters: FeedFilters,
+): Promise<FeedItem[]> {
+    const conditions = [
+        eq(matches.userId, userId),
+        gte(matches.rerankScore, RERANK_THRESHOLD),
+        ne(matches.status, "dismissed"),
+    ];
+    if (filters.soloConSalario) {
+        conditions.push(eq(jobs.salarioExplicito, true));
+    }
+    if (filters.modalidad) {
+        conditions.push(eq(jobs.modalidad, filters.modalidad));
+    }
+    if (filters.ubicacion) {
+        conditions.push(ilike(jobs.ubicacion, `%${filters.ubicacion}%`));
+    }
+
+    const rows = await db
+        .select({
+            id: matches.id,
+            rerankScore: matches.rerankScore,
+            explanation: matches.explanation,
+            status: matches.status,
+            titulo: jobs.titulo,
+            empresa: jobs.empresa,
+            modalidad: jobs.modalidad,
+            ubicacion: jobs.ubicacion,
+            salarioMin: jobs.salarioMin,
+            salarioMax: jobs.salarioMax,
+            moneda: jobs.moneda,
+            salarioPeriodo: jobs.salarioPeriodo,
+            salarioExplicito: jobs.salarioExplicito,
+            applyLink: jobs.applyLink,
+        })
+        .from(matches)
+        .innerJoin(jobs, eq(matches.jobId, jobs.id))
+        .where(and(...conditions))
+        .orderBy(desc(matches.rerankScore));
+
+    return rows.map((r) => ({
+        id: r.id,
+        rerank_score: r.rerankScore,
+        explanation: r.explanation,
+        job: {
+            titulo: r.titulo,
+            empresa: r.empresa,
+            modalidad: r.modalidad,
+            ubicacion: r.ubicacion,
+            salario_min: r.salarioMin,
+            salario_max: r.salarioMax,
+            moneda: r.moneda,
+            salario_periodo: r.salarioPeriodo,
+            salario_explicito: r.salarioExplicito,
+            apply_link: r.applyLink,
+        },
+        status: r.status,
+    }));
+}
+
+// Change a match's status. Scoped by user_id so a user cannot mutate another
+// user's match. Returns the updated row, or null if not found / not owned.
+export async function setMatchStatus(
+    userId: string,
+    matchId: string,
+    status: "seen" | "saved" | "dismissed",
+): Promise<Match | null> {
+    const [row] = await db
+        .update(matches)
+        .set({ status })
+        .where(and(eq(matches.id, matchId), eq(matches.userId, userId)))
+        .returning();
+    return row ?? null;
 }
 
 // Upsert matches on (user_id, job_id). On conflict, update scoring fields only
