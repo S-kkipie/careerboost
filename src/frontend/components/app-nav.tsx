@@ -9,7 +9,11 @@ export function AppNav() {
     const router = useRouter();
 
     async function handleSignOut() {
-        await authClient.signOut();
+        try {
+            await authClient.signOut();
+        } catch {
+            // best-effort; redirect regardless of backend result
+        }
         router.replace("/");
     }
 
