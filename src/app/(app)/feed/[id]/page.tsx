@@ -5,9 +5,9 @@ import {
     Briefcase,
     Building2,
     CalendarClock,
-    ExternalLink,
     Mail,
     MapPin,
+    Send,
     Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -34,8 +34,10 @@ import {
     formatDeadline,
     formatMatchPct,
     formatSalaryBadge,
+    gmailComposeUrl,
     gmailMessageUrl,
     modalidadLabel,
+    parseEmailAddress,
 } from "@/frontend/lib/format";
 
 function BackLink() {
@@ -95,6 +97,9 @@ function DetailInner() {
         job.deadline,
         today,
     );
+    const replyTo = parseEmailAddress(detail.email_sender);
+    const replySubject = `Re: ${detail.email_subject ?? job.titulo ?? "Convocatoria"}`;
+    const hasActions = Boolean(replyTo) || Boolean(detail.gmail_msg_id);
 
     return (
         <div className="flex flex-col gap-6">
@@ -190,36 +195,38 @@ function DetailInner() {
                     ) : null}
                 </CardContent>
 
-                <CardFooter className="flex flex-wrap items-center gap-2 px-5 pt-3 pb-5">
-                    {job.apply_link ? (
-                        <a
-                            href={job.apply_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={buttonVariants({
-                                variant: "default",
-                                size: "sm",
-                            })}
-                        >
-                            Postular
-                            <ExternalLink className="size-3.5" />
-                        </a>
-                    ) : null}
-                    {detail.gmail_msg_id ? (
-                        <a
-                            href={gmailMessageUrl(detail.gmail_msg_id)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={buttonVariants({
-                                variant: "outline",
-                                size: "sm",
-                            })}
-                        >
-                            <Mail className="size-3.5" />
-                            Ver correo en Gmail
-                        </a>
-                    ) : null}
-                </CardFooter>
+                {hasActions ? (
+                    <CardFooter className="flex flex-wrap items-center gap-2 px-5 pt-3 pb-5">
+                        {replyTo ? (
+                            <a
+                                href={gmailComposeUrl(replyTo, replySubject)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={buttonVariants({
+                                    variant: "default",
+                                    size: "sm",
+                                })}
+                            >
+                                <Send className="size-3.5" />
+                                Responder por correo
+                            </a>
+                        ) : null}
+                        {detail.gmail_msg_id ? (
+                            <a
+                                href={gmailMessageUrl(detail.gmail_msg_id)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={buttonVariants({
+                                    variant: "outline",
+                                    size: "sm",
+                                })}
+                            >
+                                <Mail className="size-3.5" />
+                                Ver correo en Gmail
+                            </a>
+                        ) : null}
+                    </CardFooter>
+                ) : null}
             </Card>
         </div>
     );

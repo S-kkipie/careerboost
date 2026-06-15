@@ -21,7 +21,6 @@ const SAMPLE: MatchCardItem = {
         moneda: "PEN",
         salario_periodo: "mensual",
         salario_explicito: true,
-        apply_link: null,
         deadline: "2026-06-25",
     },
 };

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/frontend/components/ui/badge";
-import { Button, buttonVariants } from "@/frontend/components/ui/button";
+import { Button } from "@/frontend/components/ui/button";
 import {
     Card,
     CardContent,
@@ -35,7 +35,6 @@ export interface MatchCardJob {
     moneda: string | null;
     salario_periodo: string | null;
     salario_explicito: boolean;
-    apply_link: string | null;
     deadline: string | null;
 }
 
@@ -138,19 +137,6 @@ export function MatchCard({
             ) : null}
 
             <CardFooter className="flex flex-wrap items-center gap-2 px-5 pt-3 pb-5">
-                {item.job.apply_link ? (
-                    <a
-                        href={item.job.apply_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={buttonVariants({
-                            variant: "default",
-                            size: "sm",
-                        })}
-                    >
-                        Postular
-                    </a>
-                ) : null}
                 <Button
                     variant="secondary"
                     size="sm"

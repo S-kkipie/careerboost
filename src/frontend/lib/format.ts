@@ -204,3 +204,26 @@ export function pendingCountLabel(count: number): string {
 export function gmailMessageUrl(gmailMsgId: string): string {
     return `https://mail.google.com/mail/u/0/#all/${gmailMsgId}`;
 }
+
+// Extract the bare email address from a raw header such as
+// "Nombre <addr@x.com>" or "addr@x.com". Returns null when none is present.
+export function parseEmailAddress(header: string | null): string | null {
+    if (!header) {
+        return null;
+    }
+    const angle = header.match(/<([^>]+)>/);
+    const candidate = (angle ? angle[1] : header).trim();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate) ? candidate : null;
+}
+
+// Gmail compose deep link prefilled with recipient + subject. Opens a new
+// message in the Gmail web client.
+export function gmailComposeUrl(to: string, subject: string): string {
+    const params = new URLSearchParams({
+        view: "cm",
+        fs: "1",
+        to,
+        su: subject,
+    });
+    return `https://mail.google.com/mail/?${params.toString()}`;
+}

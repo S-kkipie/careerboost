@@ -319,6 +319,8 @@ export interface MatchDetail {
     explanation: string | null;
     status: string;
     gmail_msg_id: string | null;
+    email_sender: string | null;
+    email_subject: string | null;
     job: MatchDetailJob;
 }
 
@@ -338,6 +340,8 @@ export async function getMatchDetail(
             explanation: matches.explanation,
             status: matches.status,
             gmailMsgId: ingestedMessages.gmailMsgId,
+            emailSender: ingestedMessages.sender,
+            emailSubject: ingestedMessages.subject,
             titulo: jobs.titulo,
             empresa: jobs.empresa,
             modalidad: jobs.modalidad,
@@ -374,6 +378,8 @@ export async function getMatchDetail(
         explanation: row.explanation,
         status: row.status,
         gmail_msg_id: row.gmailMsgId,
+        email_sender: row.emailSender,
+        email_subject: row.emailSubject,
         job: {
             titulo: row.titulo,
             empresa: row.empresa,

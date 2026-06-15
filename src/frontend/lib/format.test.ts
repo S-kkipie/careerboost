@@ -7,8 +7,10 @@ import {
     formatMatchPct,
     formatRelativeDay,
     formatSalaryBadge,
+    gmailComposeUrl,
     gmailMessageUrl,
     modalidadLabel,
+    parseEmailAddress,
     pendingCountLabel,
 } from "@/frontend/lib/format";
 
@@ -198,6 +200,33 @@ describe("gmailMessageUrl", () => {
     it("builds an account-agnostic deep link to the message", () => {
         expect(gmailMessageUrl("18f0abc")).toBe(
             "https://mail.google.com/mail/u/0/#all/18f0abc",
+        );
+    });
+});
+
+describe("parseEmailAddress", () => {
+    it("extracts the address from a 'Name <addr>' header", () => {
+        expect(parseEmailAddress("Bolsa UNSA <bolsa@unsa.edu.pe>")).toBe(
+            "bolsa@unsa.edu.pe",
+        );
+    });
+
+    it("returns a bare address unchanged", () => {
+        expect(parseEmailAddress("recruiter@acme.com")).toBe(
+            "recruiter@acme.com",
+        );
+    });
+
+    it("returns null when there is no valid address", () => {
+        expect(parseEmailAddress("sin correo")).toBeNull();
+        expect(parseEmailAddress(null)).toBeNull();
+    });
+});
+
+describe("gmailComposeUrl", () => {
+    it("builds a compose link with encoded recipient and subject", () => {
+        expect(gmailComposeUrl("a@b.com", "Re: Práctica")).toBe(
+            "https://mail.google.com/mail/?view=cm&fs=1&to=a%40b.com&su=Re%3A+Pr%C3%A1ctica",
         );
     });
 });

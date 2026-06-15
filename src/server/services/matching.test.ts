@@ -494,6 +494,8 @@ describe("getMatchDetail", () => {
             userId: T5_USER,
             gmailMsgId: "gmail-xyz",
             jobId,
+            sender: "Bolsa UNSA <bolsa@unsa.edu.pe>",
+            subject: "Convocatoria practicante",
         });
         await persistMatches(T5_USER, [
             {
@@ -513,6 +515,8 @@ describe("getMatchDetail", () => {
         const detail = await getMatchDetail(T5_USER, matchId);
         expect(detail?.id).toBe(matchId);
         expect(detail?.gmail_msg_id).toBe("gmail-xyz");
+        expect(detail?.email_sender).toBe("Bolsa UNSA <bolsa@unsa.edu.pe>");
+        expect(detail?.email_subject).toBe("Convocatoria practicante");
         expect(detail?.job.titulo).toBe("Detail Job");
         expect(detail?.job.empresa).toBe("Acme");
         expect(detail?.job.skills).toEqual(["node", "sql"]);
