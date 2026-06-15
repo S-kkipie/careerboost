@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
     inboxLiveResponseSchema,
     inboxResponseSchema,
+    pendingCountResponseSchema,
 } from "@/server/routers/inbox.schema";
 
 describe("inboxResponseSchema", () => {
@@ -54,5 +55,24 @@ describe("inboxLiveResponseSchema", () => {
             ],
         };
         expect(inboxLiveResponseSchema.parse(value)).toEqual(value);
+    });
+});
+
+describe("pendingCountResponseSchema", () => {
+    it("accepts a non-negative integer count", () => {
+        expect(pendingCountResponseSchema.parse({ count: 0 })).toEqual({
+            count: 0,
+        });
+        expect(pendingCountResponseSchema.parse({ count: 5 })).toEqual({
+            count: 5,
+        });
+    });
+
+    it("rejects a negative count", () => {
+        expect(() => pendingCountResponseSchema.parse({ count: -1 })).toThrow();
+    });
+
+    it("rejects a non-integer count", () => {
+        expect(() => pendingCountResponseSchema.parse({ count: 1.5 })).toThrow();
     });
 });
