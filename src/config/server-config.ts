@@ -1,7 +1,5 @@
 import { env } from "./env";
 
-const DEFAULT_RESEND_FROM = "CareerBoost <onboarding@resend.dev>";
-
 export const ServerConfig = {
     baseUrl: env.NEXT_PUBLIC_APP_URL,
     google: {
@@ -17,9 +15,5 @@ export const ServerConfig = {
     },
     cron: {
         secret: env.CRON_SECRET,
-    },
-    resend: {
-        apiKey: env.RESEND_API_KEY,
-        from: env.RESEND_FROM ?? DEFAULT_RESEND_FROM,
     },
 } as const;
