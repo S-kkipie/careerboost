@@ -36,6 +36,11 @@ export function useDigest() {
     return useQuery(api.digest.get.queryOptions());
 }
 
+export function useInbox() {
+    const api = useElysia();
+    return useQuery(api.inbox.get.queryOptions());
+}
+
 // --- Mutations (raw treaty client for deterministic typing) ---
 
 export function useRunIngestion() {
@@ -139,6 +144,18 @@ export function useSetMatchStatus() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: api.match.get.queryKey() });
             qc.invalidateQueries({ queryKey: api.digest.get.queryKey() });
+        },
+    });
+}
+
+export function useInboxLive() {
+    return useMutation({
+        mutationFn: async () => {
+            const res = await apiClient.api.v1.inbox.live.get();
+            if (res.error) {
+                throw res.error;
+            }
+            return res.data;
         },
     });
 }
