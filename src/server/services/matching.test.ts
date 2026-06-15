@@ -244,7 +244,7 @@ describe("retrieveCandidates + persistMatches", () => {
         await db.delete(jobs).where(inArray(jobs.dedupeHash, HASHES));
     });
 
-    it("retrieves vigentes jobs from the whole pool ordered by cosine distance", async () => {
+    it("retrieves jobs from the whole pool (incl. expired) ordered by cosine distance", async () => {
         await db.insert(user).values({
             id: T3_USER,
             name: "Retrieval Test",
@@ -255,7 +255,7 @@ describe("retrieveCandidates + persistMatches", () => {
         await db.insert(jobs).values([
             jobRow({ dedupeHash: "near", titulo: "near", embedding: vec(0) }),
             jobRow({ dedupeHash: "far", titulo: "far", embedding: vec(5) }),
-            // Expired deadline must be excluded.
+            // Expired deadline is still retrieved (MVP: match the whole pool).
             jobRow({
                 dedupeHash: "old",
                 titulo: "old",
@@ -271,12 +271,13 @@ describe("retrieveCandidates + persistMatches", () => {
             }),
         ]);
 
-        const candidates = await retrieveCandidates(vec(0), null);
+        const candidates = await retrieveCandidates(vec(0));
         const titles = candidates.map((c) => c.titulo);
         expect(titles).toContain("near");
         expect(titles).toContain("far");
         expect(titles).toContain("otherpool");
-        expect(titles).not.toContain("old");
+        // Expired job is now part of the candidate set too.
+        expect(titles).toContain("old");
         // Nearest first.
         expect(candidates.length).toBeGreaterThanOrEqual(2);
         const [first, second] = candidates;

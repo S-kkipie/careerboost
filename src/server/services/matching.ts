@@ -6,9 +6,7 @@ import {
     gte,
     ilike,
     isNotNull,
-    isNull,
     ne,
-    or,
     sql,
 } from "drizzle-orm";
 import type {
@@ -23,7 +21,7 @@ import { jobs } from "@/server/drizzle/schemas/jobs";
 import { type Match, matches } from "@/server/drizzle/schemas/matches";
 import { getProfile } from "@/server/services/profile";
 
-export const RETRIEVAL_LIMIT = 50;
+export const RETRIEVAL_LIMIT = 200;
 export const SALARY_BOOST = 0.05;
 export const RERANK_THRESHOLD = 50;
 
@@ -136,30 +134,16 @@ export function mergeRerank(
     });
 }
 
-// Semantic retrieval over the shared global pool with hard filters. Jobs are no
-// longer per-user — every user matches against the whole UNSA pool.
+// Semantic retrieval over the shared global pool. MVP: match against the WHOLE
+// pool — no vigencia or location hard filters, so every embedded job is a
+// candidate (location still shapes the rerank score as a soft signal, and
+// expired postings still surface while the data is historical). Jobs are not
+// per-user — every user matches against the whole UNSA pool. Nearest-by-cosine
+// first, capped at RETRIEVAL_LIMIT.
 export async function retrieveCandidates(
     profileEmbedding: number[],
-    profileUbicacion: string | null,
 ): Promise<Candidate[]> {
     const distance = sql<number>`${cosineDistance(jobs.embedding, profileEmbedding)}`;
-
-    const conditions = [
-        isNotNull(jobs.embedding),
-        // Vigencia uses Postgres CURRENT_DATE (DB session tz, UTC-5 for Peru)
-        // so a job expiring "today" local is not dropped in the evening.
-        or(isNull(jobs.deadline), gte(jobs.deadline, sql`CURRENT_DATE`)),
-    ];
-    const city = profileUbicacion?.trim();
-    if (city) {
-        conditions.push(
-            or(
-                eq(jobs.modalidad, "remoto"),
-                isNull(jobs.ubicacion),
-                ilike(jobs.ubicacion, `%${city}%`),
-            ),
-        );
-    }
 
     return db
         .select({
@@ -179,7 +163,7 @@ export async function retrieveCandidates(
             distance,
         })
         .from(jobs)
-        .where(and(...conditions))
+        .where(isNotNull(jobs.embedding))
         .orderBy(distance)
         .limit(RETRIEVAL_LIMIT);
 }
@@ -522,10 +506,7 @@ export async function runMatching(params: {
         throw new ProfileNotReadyError();
     }
 
-    const candidates = await retrieveCandidates(
-        profile.embedding,
-        profile.ubicacion,
-    );
+    const candidates = await retrieveCandidates(profile.embedding);
     if (candidates.length === 0) {
         return { count: 0 };
     }
