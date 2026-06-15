@@ -75,14 +75,23 @@ const RESPONSE_SCHEMA = {
 
 const PROMPT =
     "Extrae la vacante laboral del correo y responde SOLO con JSON según el " +
-    "schema. 'modalidad' debe ser una de: presencial, remoto, hibrido. 'moneda' " +
-    "debe ser PEN o USD si se conoce; si no, null. 'periodo' uno de: mes, hora, " +
-    "anio si se conoce; si no, null. Para 'salario.explicito' pon true SOLO si el " +
-    "correo da un monto concreto; pon false si dice 'según mercado', 'a tratar', " +
-    "'remuneración competitiva' o no menciona monto, y deja min/max en null en ese " +
-    "caso. 'deadline' en formato YYYY-MM-DD o null. 'skills' es una lista de " +
-    "tecnologías o competencias. Si un dato no aparece usa cadena vacía, lista " +
-    "vacía o null según el tipo.";
+    "schema. Si el correo agrupa varias vacantes, extrae la principal o la " +
+    "primera. 'titulo': el cargo conciso, sin el nombre de la organización ni " +
+    "adornos (p.ej. 'Practicante de Sistemas', no 'UNSA - Convocatoria para " +
+    "Practicante'). 'empresa': la organización que contrata; NO uses la bolsa de " +
+    "trabajo, universidad o remitente del correo salvo que sea el empleador real; " +
+    "cadena vacía si no se identifica. 'ubicacion': ciudad o región en Perú; " +
+    "vacía si no aparece. 'modalidad' debe ser una de: presencial, remoto, " +
+    "hibrido; si no se indica usa 'presencial'. 'moneda' debe ser PEN o USD si se " +
+    "conoce; si no, null. 'periodo' uno de: mes, hora, anio si se conoce; si no, " +
+    "null. Para 'salario.explicito' pon true SOLO si el correo da un monto " +
+    "concreto; pon false si dice 'según mercado', 'a tratar', 'remuneración " +
+    "competitiva' o no menciona monto, y deja min/max en null en ese caso. " +
+    "'deadline' en formato YYYY-MM-DD o null; convierte fechas en español (p.ej. " +
+    "'15 de marzo de 2026' -> '2026-03-15'). 'skills': lista de tecnologías o " +
+    "competencias concretas, en minúsculas, sin duplicados, máximo 12. " +
+    "'apply_link': la URL o correo de postulación si aparece; si no, null. Si un " +
+    "dato no aparece usa cadena vacía, lista vacía o null según el tipo.";
 
 export function parseExtractedJob(jsonText: string): ExtractedJob {
     return extractedJobSchema.parse(JSON.parse(jsonText));

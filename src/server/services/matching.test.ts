@@ -107,7 +107,10 @@ describe("buildRerankCandidates", () => {
                 job_id: "job-9",
                 titulo: "Data Eng",
                 empresa: "Beta",
+                modalidad: "remoto",
+                ubicacion: "Arequipa",
                 requisitos: "SQL",
+                skills: "Node, SQL",
                 salario: "No especificado",
             },
         ]);
@@ -126,7 +129,10 @@ describe("buildRerankCandidates", () => {
             job_id: "job-3",
             titulo: "",
             empresa: "",
+            modalidad: "remoto",
+            ubicacion: "Arequipa",
             requisitos: "",
+            skills: "Node, SQL",
             salario: "No especificado",
         });
     });

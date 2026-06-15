@@ -22,7 +22,7 @@ import { jobs } from "@/server/drizzle/schemas/jobs";
 import { type Match, matches } from "@/server/drizzle/schemas/matches";
 import { getProfile } from "@/server/services/profile";
 
-export const RETRIEVAL_LIMIT = 30;
+export const RETRIEVAL_LIMIT = 50;
 export const SALARY_BOOST = 0.05;
 export const RERANK_THRESHOLD = 50;
 
@@ -98,7 +98,10 @@ export function buildRerankCandidates(
         job_id: c.id,
         titulo: c.titulo ?? "",
         empresa: c.empresa ?? "",
+        modalidad: c.modalidad ?? "",
+        ubicacion: c.ubicacion ?? "",
         requisitos: c.requisitos ?? "",
+        skills: (c.skills ?? []).join(", "),
         salario: summarizeSalary(c),
     }));
 }
