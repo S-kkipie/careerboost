@@ -17,4 +17,12 @@ describe("/api/v1/inbox (auth gating)", () => {
         expect(res.status).toBe(401);
         expect(await res.json()).toEqual({ code: "unauthenticated" });
     });
+
+    it("GET /inbox/pending-count returns 401 when unauthenticated", async () => {
+        const res = await app.handle(
+            new Request("http://localhost/api/v1/inbox/pending-count"),
+        );
+        expect(res.status).toBe(401);
+        expect(await res.json()).toEqual({ code: "unauthenticated" });
+    });
 });

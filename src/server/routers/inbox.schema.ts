@@ -40,9 +40,14 @@ export const inboxLiveResponseSchema = z.object({
     unprocessed: z.array(inboxLiveItemSchema),
 });
 
+export const pendingCountResponseSchema = z.object({
+    count: z.number().int().nonnegative(),
+});
+
 export type InboxKind = z.infer<typeof inboxKindSchema>;
 export type InboxItem = z.infer<typeof inboxItemSchema>;
 export type InboxCounts = z.infer<typeof inboxCountsSchema>;
 export type InboxResponse = z.infer<typeof inboxResponseSchema>;
 export type InboxLiveItem = z.infer<typeof inboxLiveItemSchema>;
 export type InboxLiveResponse = z.infer<typeof inboxLiveResponseSchema>;
+export type PendingCountResponse = z.infer<typeof pendingCountResponseSchema>;

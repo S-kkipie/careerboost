@@ -5,11 +5,16 @@ import {
     GmailNotConnectedError,
     getGoogleAccessToken,
 } from "@/server/services/gmail";
-import { getStoredInbox, getUnprocessedInbox } from "@/server/services/inbox";
+import {
+    getPendingCount,
+    getStoredInbox,
+    getUnprocessedInbox,
+} from "@/server/services/inbox";
 import {
     type InboxLiveItem,
     inboxLiveResponseSchema,
     inboxResponseSchema,
+    pendingCountResponseSchema,
 } from "./inbox.schema";
 
 export const inboxRouter = new Elysia({ prefix: "/inbox" })
@@ -48,4 +53,30 @@ export const inboxRouter = new Elysia({ prefix: "/inbox" })
             throw e;
         }
         return inboxLiveResponseSchema.parse({ unprocessed });
+    })
+    .get("/pending-count", async ({ request, status }) => {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session) {
+            return status(401, { code: "unauthenticated" });
+        }
+        // Gmail-not-connected (or a 401/403 from Gmail) means "no signal to
+        // show" — return 0 rather than an error so the badge/banner just hide.
+        let count = 0;
+        try {
+            const token = await getGoogleAccessToken(
+                session.user.id,
+                request.headers,
+            );
+            count = await getPendingCount(session.user.id, token);
+        } catch (e) {
+            if (
+                e instanceof GmailNotConnectedError ||
+                (e instanceof GmailApiError &&
+                    (e.status === 401 || e.status === 403))
+            ) {
+                return pendingCountResponseSchema.parse({ count: 0 });
+            }
+            throw e;
+        }
+        return pendingCountResponseSchema.parse({ count });
     });

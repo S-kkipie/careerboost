@@ -8,6 +8,7 @@ import { ImpactPanel } from "@/frontend/components/feed/impact-panel";
 import { MatchCard } from "@/frontend/components/feed/match-card";
 import { SyncCta } from "@/frontend/components/feed/sync-cta";
 import { SyncError } from "@/frontend/components/feed/sync-error";
+import { SyncPendingBanner } from "@/frontend/components/feed/sync-pending-banner";
 import { SyncProgress } from "@/frontend/components/feed/sync-progress";
 import { Button } from "@/frontend/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import { Skeleton } from "@/frontend/components/ui/skeleton";
 import {
     useFeed,
     useLastIngestion,
+    usePendingCount,
     useSetMatchStatus,
 } from "@/frontend/hooks/api";
 import { useSyncBolsa } from "@/frontend/hooks/use-sync-bolsa";
@@ -45,6 +47,8 @@ function FeedInner() {
         ubicacion,
     });
     const setStatus = useSetMatchStatus();
+    const pending = usePendingCount();
+    const pendingCount = pending.data?.count ?? 0;
 
     const matches = feed.data?.matches ?? [];
     const hasRun = Boolean(ingestion.data?.run);
@@ -125,6 +129,9 @@ function FeedInner() {
                     Sincronizar ahora
                 </Button>
             </div>
+            {pendingCount > 0 ? (
+                <SyncPendingBanner count={pendingCount} onSync={sync.start} />
+            ) : null}
             <ImpactPanel
                 run={ingestion.data?.run ?? null}
                 isLoading={ingestion.isPending}
