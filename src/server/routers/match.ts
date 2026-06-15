@@ -3,6 +3,7 @@ import { auth } from "@/server/auth/auth";
 import {
     getFeed,
     getMatchDetail,
+    getSavedMatches,
     ProfileNotReadyError,
     runMatching,
     setMatchStatus,
@@ -47,6 +48,14 @@ export const matchRouter = new Elysia({ prefix: "/match" })
             }),
         },
     )
+    .get("/saved", async ({ request, status }) => {
+        const session = await auth.api.getSession({ headers: request.headers });
+        if (!session) {
+            return status(401, { code: "unauthenticated" });
+        }
+        const saved = await getSavedMatches(session.user.id);
+        return { matches: saved };
+    })
     .get(
         "/:id",
         async ({ request, status, params }) => {

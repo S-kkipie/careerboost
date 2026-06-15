@@ -18,6 +18,14 @@ describe("/api/v1/match (auth gating)", () => {
         expect(await res.json()).toEqual({ code: "unauthenticated" });
     });
 
+    it("GET /match/saved returns 401 when unauthenticated", async () => {
+        const res = await app.handle(
+            new Request("http://localhost/api/v1/match/saved"),
+        );
+        expect(res.status).toBe(401);
+        expect(await res.json()).toEqual({ code: "unauthenticated" });
+    });
+
     it("GET /match/:id returns 401 when unauthenticated", async () => {
         const res = await app.handle(
             new Request("http://localhost/api/v1/match/some-id"),

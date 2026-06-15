@@ -208,6 +208,7 @@ import { matches } from "@/server/drizzle/schemas/matches";
 import {
     getFeed,
     getMatchDetail,
+    getSavedMatches,
     ProfileNotReadyError,
     persistMatches,
     retrieveCandidates,
@@ -525,5 +526,65 @@ describe("getMatchDetail", () => {
         // A different user must not be able to read this match.
         const none = await getMatchDetail("spec06-someone-else", matchId);
         expect(none).toBeNull();
+    });
+});
+
+const T6_USER = "spec06-saved-test-user";
+
+describe("getSavedMatches", () => {
+    const HASHES = ["sv-a", "sv-b"];
+
+    afterAll(async () => {
+        await db.delete(user).where(eq(user.id, T6_USER));
+        await db.delete(jobs).where(inArray(jobs.dedupeHash, HASHES));
+    });
+
+    it("returns only the user's saved matches, newest score first", async () => {
+        await db.insert(user).values({
+            id: T6_USER,
+            name: "Saved Test",
+            email: "spec06-saved-test@example.com",
+            emailVerified: false,
+        });
+        const inserted = await db
+            .insert(jobs)
+            .values([
+                jobRow({ dedupeHash: "sv-a", titulo: "Saved A" }),
+                jobRow({ dedupeHash: "sv-b", titulo: "Other B" }),
+            ])
+            .returning({ id: jobs.id, titulo: jobs.titulo });
+        const idOf = (t: string) =>
+            inserted.find((j) => j.titulo === t)?.id ?? "";
+
+        await persistMatches(T6_USER, [
+            {
+                jobId: idOf("Saved A"),
+                score: 0.8,
+                rerankScore: 80,
+                explanation: "a",
+                flags: { skills_match: true, salario_transparente: false },
+            },
+            {
+                jobId: idOf("Other B"),
+                score: 0.7,
+                rerankScore: 70,
+                explanation: "b",
+                flags: { skills_match: false, salario_transparente: false },
+            },
+        ]);
+        // Save A; B stays "new" and must be excluded.
+        await db
+            .update(matches)
+            .set({ status: "saved" })
+            .where(
+                and(
+                    eq(matches.userId, T6_USER),
+                    eq(matches.jobId, idOf("Saved A")),
+                ),
+            );
+
+        const result = await getSavedMatches(T6_USER);
+        expect(result.map((m) => m.job.titulo)).toEqual(["Saved A"]);
+        expect(result[0]?.status).toBe("saved");
     });
 });

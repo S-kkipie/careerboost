@@ -250,6 +250,26 @@ export function mapFeedRow(r: FeedRow): FeedItem {
     };
 }
 
+// Shared column projection for match list views (feed, saved). Shape matches
+// FeedRow so the rows map straight through mapFeedRow.
+const feedColumns = {
+    id: matches.id,
+    rerankScore: matches.rerankScore,
+    explanation: matches.explanation,
+    status: matches.status,
+    titulo: jobs.titulo,
+    empresa: jobs.empresa,
+    modalidad: jobs.modalidad,
+    ubicacion: jobs.ubicacion,
+    salarioMin: jobs.salarioMin,
+    salarioMax: jobs.salarioMax,
+    moneda: jobs.moneda,
+    salarioPeriodo: jobs.salarioPeriodo,
+    salarioExplicito: jobs.salarioExplicito,
+    applyLink: jobs.applyLink,
+    deadline: jobs.deadline,
+};
+
 // Server-side feed: above-threshold, non-dismissed matches for the user,
 // ordered by rerank_score desc, with optional salary/modalidad/ubicacion filters.
 export async function getFeed(
@@ -272,26 +292,23 @@ export async function getFeed(
     }
 
     const rows = await db
-        .select({
-            id: matches.id,
-            rerankScore: matches.rerankScore,
-            explanation: matches.explanation,
-            status: matches.status,
-            titulo: jobs.titulo,
-            empresa: jobs.empresa,
-            modalidad: jobs.modalidad,
-            ubicacion: jobs.ubicacion,
-            salarioMin: jobs.salarioMin,
-            salarioMax: jobs.salarioMax,
-            moneda: jobs.moneda,
-            salarioPeriodo: jobs.salarioPeriodo,
-            salarioExplicito: jobs.salarioExplicito,
-            applyLink: jobs.applyLink,
-            deadline: jobs.deadline,
-        })
+        .select(feedColumns)
         .from(matches)
         .innerJoin(jobs, eq(matches.jobId, jobs.id))
         .where(and(...conditions))
+        .orderBy(desc(matches.rerankScore));
+
+    return rows.map(mapFeedRow);
+}
+
+// The user's explicitly saved matches, ordered by rerank_score desc. No
+// threshold filter: a saved match stays saved even if scoring later shifts.
+export async function getSavedMatches(userId: string): Promise<FeedItem[]> {
+    const rows = await db
+        .select(feedColumns)
+        .from(matches)
+        .innerJoin(jobs, eq(matches.jobId, jobs.id))
+        .where(and(eq(matches.userId, userId), eq(matches.status, "saved")))
         .orderBy(desc(matches.rerankScore));
 
     return rows.map(mapFeedRow);

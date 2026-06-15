@@ -36,6 +36,11 @@ export function useMatchDetail(id: string) {
     return useQuery(api.match({ id }).get.queryOptions());
 }
 
+export function useSavedMatches() {
+    const api = useElysia();
+    return useQuery(api.match.saved.get.queryOptions());
+}
+
 export function useDigest() {
     const api = useElysia();
     return useQuery(api.digest.get.queryOptions());
@@ -160,6 +165,7 @@ export function useSetMatchStatus() {
         },
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: api.match.get.queryKey() });
+            qc.invalidateQueries({ queryKey: api.match.saved.get.queryKey() });
             qc.invalidateQueries({ queryKey: api.digest.get.queryKey() });
         },
     });
