@@ -8,6 +8,7 @@ import {
     formatRelativeDay,
     formatSalaryBadge,
     modalidadLabel,
+    pendingCountLabel,
 } from "@/frontend/lib/format";
 
 describe("formatSalaryBadge", () => {
@@ -177,5 +178,17 @@ describe("formatRelativeDay", () => {
     it("returns empty string for null or unparseable", () => {
         expect(formatRelativeDay(null, now)).toBe("");
         expect(formatRelativeDay("nope", now)).toBe("");
+    });
+});
+
+describe("pendingCountLabel", () => {
+    it("uses the singular noun for exactly 1", () => {
+        expect(pendingCountLabel(1)).toBe("Tienes 1 correo nuevo en tu bolsa");
+    });
+
+    it("uses the plural noun otherwise", () => {
+        expect(pendingCountLabel(3)).toBe(
+            "Tienes 3 correos nuevos en tu bolsa",
+        );
     });
 });

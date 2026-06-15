@@ -191,3 +191,9 @@ export function formatRelativeDay(iso: string | null, now: Date): string {
     const months = Math.floor(days / 30);
     return `hace ${months} ${months > 1 ? "meses" : "mes"}`;
 }
+
+// Banner copy for the pending-sync signal; singular vs plural noun.
+export function pendingCountLabel(count: number): string {
+    const noun = count === 1 ? "correo nuevo" : "correos nuevos";
+    return `Tienes ${count} ${noun} en tu bolsa`;
+}
