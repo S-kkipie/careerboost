@@ -11,6 +11,7 @@
         "fix": "biome check --write .",
         "test": "vitest run",
         "db:init": "tsx scripts/db-init.ts",
+        "db:erase": "tsx scripts/db-erase.ts",
         "db:seed-demo": "tsx scripts/seed-demo.ts",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
