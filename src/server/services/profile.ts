@@ -51,11 +51,10 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 
 export async function upsertProfileFromCv(params: {
     userId: string;
-    cvUrl: string;
     extracted: ExtractedProfile;
     embedding: number[];
 }): Promise<Profile> {
-    const { userId, cvUrl, extracted, embedding } = params;
+    const { userId, extracted, embedding } = params;
     const fields = {
         escuelaProfesional: extracted.escuela_profesional,
         grado: extracted.grado,
@@ -63,7 +62,6 @@ export async function upsertProfileFromCv(params: {
         skills: extracted.skills,
         experienciaResumen: extracted.experiencia_resumen,
         intereses: extracted.intereses,
-        cvUrl,
         embedding,
     };
     const [row] = await db
@@ -94,7 +92,6 @@ export async function updateProfileFields(
 
 export async function processCvAndSaveProfile(params: {
     userId: string;
-    cvUrl: string;
     pdfBytes: Uint8Array;
 }): Promise<Profile> {
     const extracted = await extractProfileFromPdf(params.pdfBytes);
@@ -108,7 +105,6 @@ export async function processCvAndSaveProfile(params: {
     );
     return upsertProfileFromCv({
         userId: params.userId,
-        cvUrl: params.cvUrl,
         extracted,
         embedding,
     });

@@ -55,7 +55,6 @@ describe("profile persistence", () => {
 
         const first = await upsertProfileFromCv({
             userId: TEST_USER_ID,
-            cvUrl: "uploads/cv/first.pdf",
             extracted: {
                 escuela_profesional: "Ing. Sistemas",
                 grado: "egresado",
@@ -71,7 +70,6 @@ describe("profile persistence", () => {
 
         const second = await upsertProfileFromCv({
             userId: TEST_USER_ID,
-            cvUrl: "uploads/cv/second.pdf",
             extracted: {
                 escuela_profesional: "Ing. Sistemas",
                 grado: "egresado",

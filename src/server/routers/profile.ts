@@ -1,6 +1,5 @@
 import { Elysia, t } from "elysia";
 import { auth } from "@/server/auth/auth";
-import { saveCvPdf } from "@/server/services/cv-storage";
 import {
     editProfile,
     getProfile,
@@ -19,10 +18,8 @@ export const profileRouter = new Elysia({ prefix: "/profile" })
                 return status(401, { code: "unauthenticated" });
             }
             const bytes = new Uint8Array(await body.file.arrayBuffer());
-            const cvUrl = await saveCvPdf(session.user.id, bytes);
             const profile = await processCvAndSaveProfile({
                 userId: session.user.id,
-                cvUrl,
                 pdfBytes: bytes,
             });
             return { profile, extracted: true };
