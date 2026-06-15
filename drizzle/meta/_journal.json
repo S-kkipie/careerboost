@@ -36,6 +36,13 @@
             "when": 1781471342833,
             "tag": "0004_orange_kitty_pryde",
             "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1781487195067,
+            "tag": "0005_sturdy_beast",
+            "breakpoints": true
         }
     ]
 }

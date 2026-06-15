@@ -24,6 +24,9 @@ export const ingestedMessages = pgTable(
             onDelete: "set null",
         }),
         noiseReason: text("noise_reason"),
+        subject: text("subject"),
+        sender: text("sender"),
+        internalDate: timestamp("internal_date"),
         createdAt: timestamp("created_at").notNull().defaultNow(),
     },
     (table) => [

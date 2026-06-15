@@ -50,6 +50,14 @@ export function toIsoDate(headerDate: string | null): string | null {
     return d.toISOString().slice(0, 10);
 }
 
+export function toDate(headerDate: string | null): Date | null {
+    if (!headerDate) {
+        return null;
+    }
+    const d = new Date(headerDate);
+    return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export function buildJobEmbeddingText(input: {
     titulo: string;
     requisitos: string;
@@ -103,16 +111,28 @@ export async function setJobEmbedding(
 }
 
 // Record that a user's Gmail message was processed (idempotent per user+msg).
-// jobId is null when the email was classified as noise.
+// jobId is null when the email was classified as noise. Display metadata
+// (subject/sender/internalDate) is captured here for the bandeja inbox.
 export async function recordIngestedMessage(row: {
     userId: string;
     gmailMsgId: string;
     jobId: string | null;
     noiseReason: string | null;
+    subject?: string | null;
+    sender?: string | null;
+    internalDate?: Date | null;
 }): Promise<void> {
     await db
         .insert(ingestedMessages)
-        .values(row)
+        .values({
+            userId: row.userId,
+            gmailMsgId: row.gmailMsgId,
+            jobId: row.jobId,
+            noiseReason: row.noiseReason,
+            subject: row.subject ?? null,
+            sender: row.sender ?? null,
+            internalDate: row.internalDate ?? null,
+        })
         .onConflictDoNothing({
             target: [ingestedMessages.userId, ingestedMessages.gmailMsgId],
         });
@@ -205,6 +225,9 @@ async function ingestOneJob(params: {
         gmailMsgId: msg.id,
         jobId,
         noiseReason: null,
+        subject: msg.subject,
+        sender: msg.sender,
+        internalDate: toDate(msg.date),
     });
     return isNew ? "new" : "existing";
 }
@@ -256,6 +279,9 @@ export async function runIngestion(params: {
                         gmailMsgId: id,
                         jobId: null,
                         noiseReason: classified.noise_reason,
+                        subject: msg.subject,
+                        sender: msg.sender,
+                        internalDate: toDate(msg.date),
                     });
                     continue;
                 }

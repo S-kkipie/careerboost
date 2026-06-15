@@ -10,6 +10,7 @@ import {
     getLastIngestionRun,
     recordIngestedMessage,
     setJobEmbedding,
+    toDate,
     toIsoDate,
     upsertJob,
 } from "@/server/services/ingestion";
@@ -57,6 +58,19 @@ describe("toIsoDate", () => {
     it("returns null for null or junk", () => {
         expect(toIsoDate(null)).toBeNull();
         expect(toIsoDate("nope")).toBeNull();
+    });
+});
+
+describe("toDate", () => {
+    it("parses a valid RFC date header to a Date", () => {
+        const d = toDate("Mon, 02 Jun 2026 10:00:00 +0000");
+        expect(d).toBeInstanceOf(Date);
+        expect(d?.toISOString()).toBe("2026-06-02T10:00:00.000Z");
+    });
+
+    it("returns null for null or unparseable input", () => {
+        expect(toDate(null)).toBeNull();
+        expect(toDate("not a date")).toBeNull();
     });
 });
 
