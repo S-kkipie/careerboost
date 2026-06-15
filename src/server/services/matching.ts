@@ -24,7 +24,7 @@ import { getProfile } from "@/server/services/profile";
 export const RETRIEVAL_LIMIT = 200;
 // Cosine ranks the whole pool; only the nearest few are worth an LLM rerank.
 // The rest keep their cosine-derived score via the mergeRerank fallback.
-export const RERANK_LIMIT = 20;
+export const RERANK_LIMIT = 10;
 export const SALARY_BOOST = 0.05;
 export const RERANK_THRESHOLD = 50;
 
