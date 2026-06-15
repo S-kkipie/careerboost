@@ -339,10 +339,13 @@ export interface JobListItem {
     };
 }
 
-// Browse the entire shared job pool — every active job, not only the user's
-// matched ones. Left-joins the user's match (unique per user+job) so a card can
-// show the match badge and link to its detail when one exists. Active = no
-// deadline or a deadline not yet past (DB CURRENT_DATE, Peru tz). Newest first.
+// Browse the entire shared job pool — every job, not only the user's matched
+// ones, and not only vigentes (the card flags an expired deadline as
+// "Convocatoria cerrada"). Left-joins the user's match (unique per user+job) so
+// a card can show the match badge and link to its detail when one exists.
+// Vigentes first (expired sink to the bottom), then newest first.
+const isExpired = sql`(${jobs.deadline} is not null and ${jobs.deadline} < CURRENT_DATE)`;
+
 export async function getAllJobs(userId: string): Promise<JobListItem[]> {
     const rows = await db
         .select({
@@ -368,8 +371,7 @@ export async function getAllJobs(userId: string): Promise<JobListItem[]> {
             matches,
             and(eq(matches.jobId, jobs.id), eq(matches.userId, userId)),
         )
-        .where(or(isNull(jobs.deadline), gte(jobs.deadline, sql`CURRENT_DATE`)))
-        .orderBy(desc(jobs.createdAt))
+        .orderBy(isExpired, desc(jobs.createdAt))
         .limit(ALL_JOBS_LIMIT);
 
     return rows.map((r) => ({

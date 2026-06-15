@@ -600,7 +600,7 @@ describe("getAllJobs", () => {
         await db.delete(jobs).where(inArray(jobs.dedupeHash, HASHES));
     });
 
-    it("lists the whole active pool, with match fields only on the user's matched job", async () => {
+    it("lists the whole pool (incl. expired), with match fields only on the user's matched job", async () => {
         await db.insert(user).values({
             id: T7_USER,
             name: "AllJobs Test",
@@ -637,8 +637,8 @@ describe("getAllJobs", () => {
         // Unmatched job appears even with no match for the user.
         expect(titles).toContain("Matched Job");
         expect(titles).toContain("Unmatched Job");
-        // Expired job is excluded.
-        expect(titles).not.toContain("Expired Job");
+        // Expired job is still listed (the card flags it as closed).
+        expect(titles).toContain("Expired Job");
 
         const matched = all.find((j) => j.job.titulo === "Matched Job");
         expect(matched?.rerank_score).toBe(91);
