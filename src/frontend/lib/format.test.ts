@@ -5,6 +5,7 @@ import {
     errorMessage,
     formatDeadline,
     formatMatchPct,
+    formatRelativeDay,
     formatSalaryBadge,
     modalidadLabel,
 } from "@/frontend/lib/format";
@@ -153,5 +154,28 @@ describe("errorCode / errorMessage", () => {
         expect(errorMessage({ value: { code: "weird" } })).toBe(
             "Algo salió mal. Intenta de nuevo.",
         );
+    });
+});
+
+describe("formatRelativeDay", () => {
+    const now = new Date("2026-06-14T12:00:00.000Z");
+
+    it("returns hoy / ayer / hace Nd / weeks / months", () => {
+        expect(formatRelativeDay("2026-06-14T08:00:00.000Z", now)).toBe("hoy");
+        expect(formatRelativeDay("2026-06-13T08:00:00.000Z", now)).toBe("ayer");
+        expect(formatRelativeDay("2026-06-11T12:00:00.000Z", now)).toBe(
+            "hace 3d",
+        );
+        expect(formatRelativeDay("2026-06-01T12:00:00.000Z", now)).toBe(
+            "hace 1 sem",
+        );
+        expect(formatRelativeDay("2026-04-01T12:00:00.000Z", now)).toBe(
+            "hace 2 meses",
+        );
+    });
+
+    it("returns empty string for null or unparseable", () => {
+        expect(formatRelativeDay(null, now)).toBe("");
+        expect(formatRelativeDay("nope", now)).toBe("");
     });
 });

@@ -164,3 +164,30 @@ export function errorMessage(error: unknown): string {
     const known = code ? ERROR_MESSAGES[code] : undefined;
     return known ?? "Algo salió mal. Intenta de nuevo.";
 }
+
+// Short Spanish relative-day label for inbox rows. `now` is injected so the
+// function stays pure and unit-testable.
+export function formatRelativeDay(iso: string | null, now: Date): string {
+    if (!iso) {
+        return "";
+    }
+    const then = new Date(iso);
+    if (Number.isNaN(then.getTime())) {
+        return "";
+    }
+    const days = Math.floor((now.getTime() - then.getTime()) / 86_400_000);
+    if (days <= 0) {
+        return "hoy";
+    }
+    if (days === 1) {
+        return "ayer";
+    }
+    if (days < 7) {
+        return `hace ${days}d`;
+    }
+    if (days < 30) {
+        return `hace ${Math.floor(days / 7)} sem`;
+    }
+    const months = Math.floor(days / 30);
+    return `hace ${months} ${months > 1 ? "meses" : "mes"}`;
+}
