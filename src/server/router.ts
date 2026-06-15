@@ -5,6 +5,7 @@ import { auth } from "@/server/auth/auth";
 import { digestRouter } from "@/server/routers/digest";
 import { gmailRouter } from "@/server/routers/gmail";
 import { healthRouter } from "@/server/routers/health";
+import { inboxRouter } from "@/server/routers/inbox";
 import { ingestRouter } from "@/server/routers/ingest";
 import { matchRouter } from "@/server/routers/match";
 import { meRouter } from "@/server/routers/me";
@@ -39,6 +40,7 @@ const app = new Elysia({ prefix: "/api/v1" })
     .use(gmailRouter)
     .use(profileRouter)
     .use(ingestRouter)
+    .use(inboxRouter)
     .use(matchRouter)
     .use(digestRouter);
 
