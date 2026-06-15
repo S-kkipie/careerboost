@@ -90,30 +90,57 @@ helper (mirrors the existing `toIsoDate`).
 New Elysia router `src/server/routers/inbox.ts` mounted under `/api/v1`, session-guarded like the
 other v1 routers (resolves `session.user.id`).
 
-### `GET /api/v1/inbox` — stored list (instant)
+### Schemas — Zod is the source of truth
 
-Reads from the DB only. Returns the saved, already-classified messages for the user:
+All inbox shapes are defined as **Zod schemas** with types derived via **`z.infer`** — no
+hand-written `interface`/`type` literals. This matches the project convention already used in
+`src/server/ai/*` and `src/config/env.ts` (`zod ^4`). Elysia **1.4.28** + Zod **4** support
+[Standard Schema](https://standardschema.dev), so the Zod schemas are passed **directly** into the
+Elysia route validators (`response`, `query`); Eden Treaty then infers the frontend types from the
+route definitions, keeping a single source of truth end-to-end. (The older routers use TypeBox
+`t`; this feature intentionally uses Zod per the source-of-truth rule.)
+
+Schema module: `src/server/routers/inbox.schema.ts`.
 
 ```ts
-type InboxKind = "convocatoria" | "filtrado";
+import { z } from "zod";
 
-interface InboxItem {
-    gmailMsgId: string;
-    subject: string | null;
-    sender: string | null;
-    date: string | null;        // ISO string from internal_date, or null
-    kind: InboxKind;
-    noiseReason: string | null; // set when kind === "filtrado"
-    jobId: string | null;       // set when kind === "convocatoria"
-    titulo: string | null;      // from joined jobs row (convocatoria)
-    empresa: string | null;     // from joined jobs row (convocatoria)
-}
+export const inboxKindSchema = z.enum(["convocatoria", "filtrado"]);
 
-interface InboxResponse {
-    counts: { total: number; convocatorias: number; filtrados: number };
-    items: InboxItem[];         // ordered by internal_date desc, nulls last; capped at 100
-}
+export const inboxItemSchema = z.object({
+    gmailMsgId: z.string(),
+    subject: z.string().nullable(),
+    sender: z.string().nullable(),
+    date: z.string().nullable(),        // ISO string from internal_date, or null
+    kind: inboxKindSchema,
+    noiseReason: z.string().nullable(), // set when kind === "filtrado"
+    jobId: z.string().nullable(),       // set when kind === "convocatoria"
+    titulo: z.string().nullable(),      // from joined jobs row (convocatoria)
+    empresa: z.string().nullable(),     // from joined jobs row (convocatoria)
+});
+
+export const inboxCountsSchema = z.object({
+    total: z.number(),
+    convocatorias: z.number(),
+    filtrados: z.number(),
+});
+
+export const inboxResponseSchema = z.object({
+    counts: inboxCountsSchema,
+    items: z.array(inboxItemSchema),    // internal_date desc, nulls last; capped at 100
+});
+
+export type InboxKind = z.infer<typeof inboxKindSchema>;
+export type InboxItem = z.infer<typeof inboxItemSchema>;
+export type InboxResponse = z.infer<typeof inboxResponseSchema>;
 ```
+
+### `GET /api/v1/inbox` — stored list (instant)
+
+Reads from the DB only. Returns the saved, already-classified messages for the user, validated
+against `inboxResponseSchema`:
+
+- `response: inboxResponseSchema` on the Elysia route.
 
 - Query: `ingested_messages` `LEFT JOIN jobs ON ingested_messages.job_id = jobs.id`,
   `WHERE ingested_messages.user_id = ?`, `ORDER BY internal_date DESC NULLS LAST`, `LIMIT 100`.
@@ -127,16 +154,22 @@ interface InboxResponse {
 Live freshness. Lists the current Gmail message ids for the bolsa senders (same query as ingest:
 `buildGmailQuery(resolveSenders(...), INGEST_NEWER_THAN_DAYS)`, cap `INGEST_MAX_MESSAGES`), diffs
 against the user's stored `gmailMsgId`s, and fetches **headers only** for the missing ids.
+Validated against `inboxLiveResponseSchema` (also in `inbox.schema.ts`, Zod source of truth):
 
 ```ts
-interface InboxLiveResponse {
-    unprocessed: Array<{
-        gmailMsgId: string;
-        subject: string | null;
-        sender: string | null;
-        date: string | null;
-    }>;
-}
+export const inboxLiveItemSchema = z.object({
+    gmailMsgId: z.string(),
+    subject: z.string().nullable(),
+    sender: z.string().nullable(),
+    date: z.string().nullable(),
+});
+
+export const inboxLiveResponseSchema = z.object({
+    unprocessed: z.array(inboxLiveItemSchema),
+});
+
+export type InboxLiveItem = z.infer<typeof inboxLiveItemSchema>;
+export type InboxLiveResponse = z.infer<typeof inboxLiveResponseSchema>;
 ```
 
 - Requires a new lightweight Gmail helper `getMessageMetadata(token, id)` that fetches with
@@ -180,6 +213,8 @@ New route `src/app/(app)/bandeja/page.tsx` inside the `(app)` group (inherits
 - `useInbox()` → `GET /inbox` (query).
 - `useInboxLive()` → manual/lazy fetch of `GET /inbox/live` (mutation-style or `enabled:false`
   query triggered by the button); exposes loading/error + the `unprocessed` items.
+- Frontend types come from Eden Treaty inference off the Zod-validated routes (or by importing the
+  `z.infer` types from `inbox.schema.ts`) — components define **no** separate interfaces.
 
 ## Deep-link to Gmail
 
@@ -217,7 +252,8 @@ export function gmailMessageUrl(email: string, gmailMsgId: string): string {
   - inbox mapping helper (rows → `kind` + counts) if extracted as a pure function.
 - **Endpoint tests** where they fit the existing service-test style (the stored `GET /inbox`
   query mapping; the live diff logic with the Gmail client mocked). Follow the existing
-  ingestion/matching test patterns.
+  ingestion/matching test patterns. The Zod `response` schemas validate route output at runtime
+  (Standard Schema), so a mapping that drifts from the schema fails fast.
 - No DOM test runner — page + components verified via `pnpm check` (biome + `tsc --noEmit`) +
   `pnpm build` + a manual walk (consistent with specs 06/07, shared-jobs-pool, unified-onboarding).
 - All existing tests stay green.
