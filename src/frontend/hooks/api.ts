@@ -41,6 +41,15 @@ export function useInbox() {
     return useQuery(api.inbox.get.queryOptions());
 }
 
+export function usePendingCount() {
+    const api = useElysia();
+    return useQuery({
+        ...api.inbox["pending-count"].get.queryOptions(),
+        staleTime: 5 * 60_000,
+        refetchOnWindowFocus: true,
+    });
+}
+
 // --- Mutations (raw treaty client for deterministic typing) ---
 
 export function useRunIngestion() {
@@ -57,6 +66,9 @@ export function useRunIngestion() {
         onSuccess: () => {
             qc.invalidateQueries({
                 queryKey: api.ingest.last.get.queryKey(),
+            });
+            qc.invalidateQueries({
+                queryKey: api.inbox["pending-count"].get.queryKey(),
             });
         },
     });
