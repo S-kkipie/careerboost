@@ -4,6 +4,7 @@ import { RefreshCw } from "lucide-react";
 import { requestGmailAccess } from "@/frontend/auth/gmail";
 import { Button } from "@/frontend/components/ui/button";
 import { errorCode } from "@/frontend/lib/format";
+import { cn } from "@/frontend/lib/utils";
 
 interface RefreshFromGmailButtonProps {
     isPending: boolean;
@@ -36,7 +37,10 @@ export function RefreshFromGmailButton({
             disabled={isPending}
             onClick={onRefresh}
         >
-            <RefreshCw aria-hidden="true" />
+            <RefreshCw
+                aria-hidden="true"
+                className={cn(isPending && "animate-spin")}
+            />
             Actualizar desde Gmail
         </Button>
     );
