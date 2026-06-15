@@ -139,3 +139,39 @@ export async function getMessage(
         text: extractMessageText(msg.payload),
     };
 }
+
+export interface GmailMessageMetadata {
+    id: string;
+    sender: string | null;
+    subject: string | null;
+    date: string | null; // raw Date header
+}
+
+// Fetches only the headers we display in the bandeja (no body is ever fetched
+// here — lighter, and avoids touching message content for a transparency view).
+export async function getMessageMetadata(
+    accessToken: string,
+    messageId: string,
+): Promise<GmailMessageMetadata> {
+    const url = new URL(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}`,
+    );
+    url.searchParams.set("format", "metadata");
+    url.searchParams.append("metadataHeaders", "Subject");
+    url.searchParams.append("metadataHeaders", "From");
+    url.searchParams.append("metadataHeaders", "Date");
+    const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!res.ok) {
+        throw new GmailApiError(res.status);
+    }
+    const msg = (await res.json()) as GmailMessageResponse;
+    const headers = msg.payload?.headers;
+    return {
+        id: msg.id,
+        sender: getHeader(headers, "From"),
+        subject: getHeader(headers, "Subject"),
+        date: getHeader(headers, "Date"),
+    };
+}
