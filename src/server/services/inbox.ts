@@ -133,3 +133,33 @@ export async function getUnprocessedInbox(
     }
     return items;
 }
+
+// Count of bolsa emails present in Gmail but not yet synced for this user.
+// Lighter than getUnprocessedInbox: one messages.list call, then diff against
+// stored ids — no per-message metadata fetch.
+export async function getPendingCount(
+    userId: string,
+    accessToken: string,
+): Promise<number> {
+    const senders = resolveSenders(ServerConfig.ingest.senders);
+    const query = buildGmailQuery(senders, INGEST_NEWER_THAN_DAYS);
+    const ids = await listJobMessageIds(
+        accessToken,
+        query,
+        INGEST_MAX_MESSAGES,
+    );
+    if (ids.length === 0) {
+        return 0;
+    }
+    const storedRows = await db
+        .select({ gmailMsgId: ingestedMessages.gmailMsgId })
+        .from(ingestedMessages)
+        .where(
+            and(
+                eq(ingestedMessages.userId, userId),
+                inArray(ingestedMessages.gmailMsgId, ids),
+            ),
+        );
+    const stored = new Set(storedRows.map((r) => r.gmailMsgId));
+    return diffNewIds(ids, stored).length;
+}
