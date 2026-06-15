@@ -73,6 +73,8 @@ describe("pendingCountResponseSchema", () => {
     });
 
     it("rejects a non-integer count", () => {
-        expect(() => pendingCountResponseSchema.parse({ count: 1.5 })).toThrow();
+        expect(() =>
+            pendingCountResponseSchema.parse({ count: 1.5 }),
+        ).toThrow();
     });
 });
