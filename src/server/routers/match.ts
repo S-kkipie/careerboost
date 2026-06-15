@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { auth } from "@/server/auth/auth";
 import {
     getFeed,
+    getMatchDetail,
     ProfileNotReadyError,
     runMatching,
     setMatchStatus,
@@ -44,6 +45,25 @@ export const matchRouter = new Elysia({ prefix: "/match" })
                 modalidad: t.Optional(t.String()),
                 ubicacion: t.Optional(t.String()),
             }),
+        },
+    )
+    .get(
+        "/:id",
+        async ({ request, status, params }) => {
+            const session = await auth.api.getSession({
+                headers: request.headers,
+            });
+            if (!session) {
+                return status(401, { code: "unauthenticated" });
+            }
+            const detail = await getMatchDetail(session.user.id, params.id);
+            if (!detail) {
+                return status(404, { code: "match_not_found" });
+            }
+            return { detail };
+        },
+        {
+            params: t.Object({ id: t.String() }),
         },
     )
     .patch(

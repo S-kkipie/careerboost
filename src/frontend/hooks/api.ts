@@ -31,6 +31,11 @@ export function useFeed(filters: FeedFilters) {
     return useQuery(api.match.get.queryOptions(filters));
 }
 
+export function useMatchDetail(id: string) {
+    const api = useElysia();
+    return useQuery(api.match({ id }).get.queryOptions());
+}
+
 export function useDigest() {
     const api = useElysia();
     return useQuery(api.digest.get.queryOptions());

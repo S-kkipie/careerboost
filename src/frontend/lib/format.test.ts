@@ -7,6 +7,7 @@ import {
     formatMatchPct,
     formatRelativeDay,
     formatSalaryBadge,
+    gmailMessageUrl,
     modalidadLabel,
     pendingCountLabel,
 } from "@/frontend/lib/format";
@@ -189,6 +190,14 @@ describe("pendingCountLabel", () => {
     it("uses the plural noun otherwise", () => {
         expect(pendingCountLabel(3)).toBe(
             "Tienes 3 correos nuevos en tu bolsa",
+        );
+    });
+});
+
+describe("gmailMessageUrl", () => {
+    it("builds an account-agnostic deep link to the message", () => {
+        expect(gmailMessageUrl("18f0abc")).toBe(
+            "https://mail.google.com/mail/u/0/#all/18f0abc",
         );
     });
 });

@@ -7,6 +7,7 @@ import {
     Sparkles,
     X,
 } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/frontend/components/ui/badge";
 import { Button, buttonVariants } from "@/frontend/components/ui/button";
 import {
@@ -71,8 +72,12 @@ export function MatchCard({
         <Card className="gap-0 py-0">
             <CardHeader className="px-5 pt-5 pb-3">
                 <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                        <h3 className="font-serif font-semibold text-foreground leading-snug">
+                    <Link
+                        href={`/feed/${item.id}`}
+                        className="group min-w-0"
+                        aria-label={`Ver detalle de ${item.job.titulo ?? "la vacante"}`}
+                    >
+                        <h3 className="font-serif font-semibold text-foreground leading-snug group-hover:underline">
                             {item.job.titulo}
                         </h3>
                         {item.job.empresa ? (
@@ -81,7 +86,7 @@ export function MatchCard({
                                 {item.job.empresa}
                             </p>
                         ) : null}
-                    </div>
+                    </Link>
                     <Badge
                         variant="default"
                         className="shrink-0 bg-primary text-primary-foreground"

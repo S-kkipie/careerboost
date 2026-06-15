@@ -18,6 +18,7 @@ import type {
 } from "@/server/ai/rerank";
 import { rerankJobs } from "@/server/ai/rerank";
 import { db } from "@/server/drizzle/db";
+import { ingestedMessages } from "@/server/drizzle/schemas/ingested-messages";
 import { jobs } from "@/server/drizzle/schemas/jobs";
 import { type Match, matches } from "@/server/drizzle/schemas/matches";
 import { getProfile } from "@/server/services/profile";
@@ -294,6 +295,101 @@ export async function getFeed(
         .orderBy(desc(matches.rerankScore));
 
     return rows.map(mapFeedRow);
+}
+
+export interface MatchDetailJob {
+    titulo: string | null;
+    empresa: string | null;
+    modalidad: string | null;
+    ubicacion: string | null;
+    salario_min: number | null;
+    salario_max: number | null;
+    moneda: string | null;
+    salario_periodo: string | null;
+    salario_explicito: boolean;
+    requisitos: string | null;
+    skills: string[] | null;
+    apply_link: string | null;
+    deadline: string | null;
+}
+
+export interface MatchDetail {
+    id: string;
+    rerank_score: number | null;
+    explanation: string | null;
+    status: string;
+    gmail_msg_id: string | null;
+    job: MatchDetailJob;
+}
+
+// One match for the user with the full job plus the Gmail message id that
+// produced it (for the "ver correo original" deep link). Scoped by user_id so a
+// user cannot read another user's match. The Gmail id is left-joined from the
+// user's own inbox log; when the same job arrived in several emails, the most
+// recent one wins. Returns null when the match is missing or not owned.
+export async function getMatchDetail(
+    userId: string,
+    matchId: string,
+): Promise<MatchDetail | null> {
+    const [row] = await db
+        .select({
+            id: matches.id,
+            rerankScore: matches.rerankScore,
+            explanation: matches.explanation,
+            status: matches.status,
+            gmailMsgId: ingestedMessages.gmailMsgId,
+            titulo: jobs.titulo,
+            empresa: jobs.empresa,
+            modalidad: jobs.modalidad,
+            ubicacion: jobs.ubicacion,
+            salarioMin: jobs.salarioMin,
+            salarioMax: jobs.salarioMax,
+            moneda: jobs.moneda,
+            salarioPeriodo: jobs.salarioPeriodo,
+            salarioExplicito: jobs.salarioExplicito,
+            requisitos: jobs.requisitos,
+            skills: jobs.skills,
+            applyLink: jobs.applyLink,
+            deadline: jobs.deadline,
+        })
+        .from(matches)
+        .innerJoin(jobs, eq(matches.jobId, jobs.id))
+        .leftJoin(
+            ingestedMessages,
+            and(
+                eq(ingestedMessages.jobId, matches.jobId),
+                eq(ingestedMessages.userId, userId),
+            ),
+        )
+        .where(and(eq(matches.id, matchId), eq(matches.userId, userId)))
+        .orderBy(desc(ingestedMessages.internalDate))
+        .limit(1);
+
+    if (!row) {
+        return null;
+    }
+    return {
+        id: row.id,
+        rerank_score: row.rerankScore,
+        explanation: row.explanation,
+        status: row.status,
+        gmail_msg_id: row.gmailMsgId,
+        job: {
+            titulo: row.titulo,
+            empresa: row.empresa,
+            modalidad: row.modalidad,
+            ubicacion: row.ubicacion,
+            salario_min: row.salarioMin,
+            salario_max: row.salarioMax,
+            moneda: row.moneda,
+            salario_periodo: row.salarioPeriodo,
+            salario_explicito: row.salarioExplicito,
+            requisitos: row.requisitos,
+            skills: row.skills,
+            apply_link: row.applyLink,
+            deadline: row.deadline,
+        },
+    };
 }
 
 // Change a match's status. Scoped by user_id so a user cannot mutate another

@@ -202,10 +202,12 @@ describe("mergeRerank", () => {
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/server/drizzle/db";
 import { user } from "@/server/drizzle/schemas/auth-schema";
+import { ingestedMessages } from "@/server/drizzle/schemas/ingested-messages";
 import { jobs } from "@/server/drizzle/schemas/jobs";
 import { matches } from "@/server/drizzle/schemas/matches";
 import {
     getFeed,
+    getMatchDetail,
     ProfileNotReadyError,
     persistMatches,
     retrieveCandidates,
@@ -454,5 +456,70 @@ describe("runMatching guard", () => {
         await expect(
             runMatching({ userId: "spec05-no-profile-user" }),
         ).rejects.toBeInstanceOf(ProfileNotReadyError);
+    });
+});
+
+const T5_USER = "spec06-detail-test-user";
+
+describe("getMatchDetail", () => {
+    const HASH = "detail-job";
+
+    afterAll(async () => {
+        // Cascade removes the user's match + ingested rows; job deleted by hash.
+        await db.delete(user).where(eq(user.id, T5_USER));
+        await db.delete(jobs).where(eq(jobs.dedupeHash, HASH));
+    });
+
+    it("returns the full job with the user's Gmail message id, scoped by user", async () => {
+        await db.insert(user).values({
+            id: T5_USER,
+            name: "Detail Test",
+            email: "spec06-detail-test@example.com",
+            emailVerified: false,
+        });
+        const [job] = await db
+            .insert(jobs)
+            .values(
+                jobRow({
+                    dedupeHash: HASH,
+                    titulo: "Detail Job",
+                    empresa: "Acme",
+                    skills: ["node", "sql"],
+                }),
+            )
+            .returning({ id: jobs.id });
+        const jobId = job?.id ?? "";
+
+        await db.insert(ingestedMessages).values({
+            userId: T5_USER,
+            gmailMsgId: "gmail-xyz",
+            jobId,
+        });
+        await persistMatches(T5_USER, [
+            {
+                jobId,
+                score: 0.9,
+                rerankScore: 88,
+                explanation: "encaja",
+                flags: { skills_match: true, salario_transparente: false },
+            },
+        ]);
+        const [m] = await db
+            .select({ id: matches.id })
+            .from(matches)
+            .where(and(eq(matches.userId, T5_USER), eq(matches.jobId, jobId)));
+        const matchId = m?.id ?? "";
+
+        const detail = await getMatchDetail(T5_USER, matchId);
+        expect(detail?.id).toBe(matchId);
+        expect(detail?.gmail_msg_id).toBe("gmail-xyz");
+        expect(detail?.job.titulo).toBe("Detail Job");
+        expect(detail?.job.empresa).toBe("Acme");
+        expect(detail?.job.skills).toEqual(["node", "sql"]);
+        expect(detail?.rerank_score).toBe(88);
+
+        // A different user must not be able to read this match.
+        const none = await getMatchDetail("spec06-someone-else", matchId);
+        expect(none).toBeNull();
     });
 });

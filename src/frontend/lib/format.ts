@@ -197,3 +197,10 @@ export function pendingCountLabel(count: number): string {
     const noun = count === 1 ? "correo nuevo" : "correos nuevos";
     return `Tienes ${count} ${noun} en tu bolsa`;
 }
+
+// Deep link that opens the original Gmail message in the web client. The
+// `#all/<id>` anchor is account-index agnostic, so it resolves regardless of
+// which Google account the user is signed into.
+export function gmailMessageUrl(gmailMsgId: string): string {
+    return `https://mail.google.com/mail/u/0/#all/${gmailMsgId}`;
+}
