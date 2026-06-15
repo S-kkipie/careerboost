@@ -65,8 +65,10 @@ export async function getGmailProfile(
 }
 
 export const DEFAULT_BOLSA_SENDERS = ["udeeg_convocatorias@unsa.edu.pe"];
-export const INGEST_NEWER_THAN_DAYS = 30;
-export const INGEST_MAX_MESSAGES = 50;
+// 3-month window: scan the last ~quarter of bolsa mail. Cap raised to absorb
+// the higher volume so a busy quarter is not truncated mid-list.
+export const INGEST_NEWER_THAN_DAYS = 90;
+export const INGEST_MAX_MESSAGES = 200;
 
 export interface ParsedGmailMessage {
     id: string;

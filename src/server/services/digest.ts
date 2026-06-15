@@ -5,10 +5,6 @@ import { db } from "@/server/drizzle/db";
 import { account, user } from "@/server/drizzle/schemas/auth-schema";
 import { jobs } from "@/server/drizzle/schemas/jobs";
 import { matches } from "@/server/drizzle/schemas/matches";
-import {
-    buildDigestEmail,
-    sendDigestEmail,
-} from "@/server/services/digest-email";
 import { GMAIL_READONLY_SCOPE } from "@/server/services/gmail";
 import { refreshGoogleAccessToken } from "@/server/services/google-oauth";
 import { runIngestion } from "@/server/services/ingestion";
@@ -116,7 +112,6 @@ const logger = getLogger(["server", "digest"]);
 export interface DigestRunResult {
     usersProcessed: number;
     usersWithNewMatches: number;
-    emailsSent: number;
 }
 
 function errMessage(err: unknown): string {
@@ -124,16 +119,14 @@ function errMessage(err: unknown): string {
 }
 
 // Cron orchestrator: for each eligible user, refresh the Google token, run
-// ingestion + matching, then surface (and optionally email) the new digest.
+// ingestion + matching, then surface the new digest (read in-app at /digest).
 // Per-user failures are logged and skipped. Never logs tokens or email bodies.
 export async function runDigest(): Promise<DigestRunResult> {
     const users = await listDigestUsers();
     const result: DigestRunResult = {
         usersProcessed: 0,
         usersWithNewMatches: 0,
-        emailsSent: 0,
     };
-    const resendKey = ServerConfig.resend.apiKey;
 
     for (const u of users) {
         try {
@@ -161,17 +154,6 @@ export async function runDigest(): Promise<DigestRunResult> {
                 continue;
             }
             result.usersWithNewMatches++;
-
-            if (resendKey) {
-                const payload = buildDigestEmail({
-                    to: u.email,
-                    from: ServerConfig.resend.from,
-                    items: digest,
-                    appUrl: ServerConfig.baseUrl,
-                });
-                await sendDigestEmail(payload, resendKey);
-                result.emailsSent++;
-            }
         } catch (err) {
             logger.warn("digest user {userId} failed: {error}", {
                 userId: u.userId,

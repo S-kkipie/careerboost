@@ -32,7 +32,10 @@ export interface RerankCandidateInput {
     job_id: string;
     titulo: string;
     empresa: string;
+    modalidad: string;
+    ubicacion: string;
     requisitos: string;
+    skills: string;
     salario: string;
 }
 
@@ -76,15 +79,20 @@ const RESPONSE_SCHEMA = {
 
 const PROMPT =
     "Eres un asistente de empleabilidad para egresados universitarios. Recibes " +
-    "un perfil y una lista de vacantes (cada una con su 'job_id'). Para CADA " +
+    "un perfil y una lista de vacantes (cada una con su 'job_id', titulo, " +
+    "empresa, modalidad, ubicacion, requisitos, skills y salario). Para CADA " +
     "vacante devuelve un objeto con: 'job_id' EXACTAMENTE igual al recibido; " +
-    "'match_score' entero de 0 a 100 que mida qué tan bien encaja la vacante con " +
-    "el perfil (carrera, skills, experiencia e intereses); 'explanation' en " +
-    "español, concreta y personal (p.ej. 'encaja con tu experiencia en X y tu " +
-    "interés en Y'); y 'flags' con 'skills_match' (true si las skills requeridas " +
-    "coinciden con las del perfil) y 'salario_transparente' (true si la vacante " +
-    "indica un salario concreto, false si dice 'No especificado'). Responde SOLO " +
-    "con JSON según el schema e incluye TODAS las vacantes recibidas.";
+    "'match_score' entero de 0 a 100; 'explanation' en español, concreta y " +
+    "personal (p.ej. 'encaja con tu experiencia en X y tu interés en Y'); y " +
+    "'flags' con 'skills_match' (true solo si varias skills requeridas coinciden " +
+    "con las del perfil) y 'salario_transparente' (true si la vacante indica un " +
+    "salario concreto, false si dice 'No especificado'). Calibra 'match_score' " +
+    "así: 80-100 cuando la carrera/área y las skills están muy alineadas; 50-79 " +
+    "cuando está relacionada o parcialmente alineada; 1-49 cuando es poco " +
+    "relevante. Penaliza fuerte (por debajo de 50) si la carrera o el área de la " +
+    "vacante no corresponde al perfil, aunque coincida alguna skill suelta. " +
+    "Responde SOLO con JSON según el schema e incluye TODAS las vacantes " +
+    "recibidas.";
 
 export function parseRerank(jsonText: string): RerankItem[] {
     return rerankResultSchema.parse(JSON.parse(jsonText)).results;

@@ -20,13 +20,18 @@ const RESPONSE_SCHEMA = {
 };
 
 const PROMPT =
-    "Clasifica si el correo es una oferta laboral real (vacante de empleo o " +
-    "práctica) dirigida a egresados universitarios. Responde SOLO con JSON " +
-    "según el schema. 'is_job'=true únicamente si describe una vacante concreta. " +
-    "Si es ruido (newsletter, evento, webinar, encuesta, aviso administrativo, " +
-    "felicitación, publicidad) pon 'is_job'=false y 'noise_reason' con una razón " +
-    "breve en una o dos palabras (p.ej. 'evento', 'encuesta', 'publicidad'). " +
-    "Si 'is_job'=true deja 'noise_reason' como cadena vacía.";
+    "Clasifica si el correo contiene una oportunidad laboral real dirigida a " +
+    "egresados universitarios. Responde SOLO con JSON según el schema. Cuenta " +
+    "como oportunidad laboral ('is_job'=true): vacantes de empleo, prácticas " +
+    "pre-profesionales o profesionales, CAS, locación de servicios, concursos " +
+    "públicos de empleo y convocatorias laborales, incluso si el correo agrupa " +
+    "varias vacantes o solo enlaza a la postulación. Prioriza el recall: si hay " +
+    "duda razonable de que describe una oportunidad laboral concreta, pon " +
+    "'is_job'=true. Pon 'is_job'=false SOLO cuando es claramente ruido " +
+    "(newsletter, evento, webinar, encuesta, aviso administrativo, " +
+    "felicitación, publicidad, beca o curso sin vacante) y en 'noise_reason' la " +
+    "razón en una o dos palabras (p.ej. 'evento', 'encuesta', 'publicidad'). Si " +
+    "'is_job'=true deja 'noise_reason' como cadena vacía.";
 
 export function parseClassifiedEmail(jsonText: string): ClassifiedEmail {
     return classifiedEmailSchema.parse(JSON.parse(jsonText));
