@@ -110,6 +110,9 @@ export async function rerankJobs(
         config: {
             responseMimeType: "application/json",
             responseSchema: RESPONSE_SCHEMA,
+            // Ranking is a scoring task, not a reasoning one — skip the 2.5
+            // "thinking" pass to cut latency with no quality loss.
+            thinkingConfig: { thinkingBudget: 0 },
         },
     });
     const text = res.text;

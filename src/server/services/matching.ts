@@ -22,6 +22,9 @@ import { type Match, matches } from "@/server/drizzle/schemas/matches";
 import { getProfile } from "@/server/services/profile";
 
 export const RETRIEVAL_LIMIT = 200;
+// Cosine ranks the whole pool; only the nearest few are worth an LLM rerank.
+// The rest keep their cosine-derived score via the mergeRerank fallback.
+export const RERANK_LIMIT = 20;
 export const SALARY_BOOST = 0.05;
 export const RERANK_THRESHOLD = 50;
 
@@ -511,6 +514,7 @@ export async function runMatching(params: {
         return { count: 0 };
     }
 
+    // Cosine score for the whole pool — this is the base ranking.
     const scored = candidates.map((c) => ({
         jobId: c.id,
         score: computeScore({
@@ -520,6 +524,9 @@ export async function runMatching(params: {
         salarioExplicito: c.salarioExplicito,
     }));
 
+    // candidates are sorted nearest-first, so the LLM only reranks/explains the
+    // top RERANK_LIMIT. The long tail keeps its cosine score (mergeRerank
+    // fallback) — keeps the call cheap and fast regardless of pool size.
     const llm = await rerankJobs(
         {
             escuelaProfesional: profile.escuelaProfesional,
@@ -527,7 +534,7 @@ export async function runMatching(params: {
             experienciaResumen: profile.experienciaResumen,
             intereses: profile.intereses,
         },
-        buildRerankCandidates(candidates),
+        buildRerankCandidates(candidates.slice(0, RERANK_LIMIT)),
     );
 
     const merged = mergeRerank(scored, llm);
