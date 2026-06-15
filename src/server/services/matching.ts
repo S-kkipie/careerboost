@@ -314,6 +314,86 @@ export async function getSavedMatches(userId: string): Promise<FeedItem[]> {
     return rows.map(mapFeedRow);
 }
 
+export const ALL_JOBS_LIMIT = 200;
+
+export interface JobListItem {
+    // Job-centric: id is the job id. match_id is the user's match for this job
+    // (null when never matched), used to deep-link to the detail page.
+    job_id: string;
+    match_id: string | null;
+    rerank_score: number | null;
+    status: string | null;
+    job: {
+        titulo: string | null;
+        empresa: string | null;
+        modalidad: string | null;
+        ubicacion: string | null;
+        salario_min: number | null;
+        salario_max: number | null;
+        moneda: string | null;
+        salario_periodo: string | null;
+        salario_explicito: boolean;
+        skills: string[] | null;
+        apply_link: string | null;
+        deadline: string | null;
+    };
+}
+
+// Browse the entire shared job pool — every active job, not only the user's
+// matched ones. Left-joins the user's match (unique per user+job) so a card can
+// show the match badge and link to its detail when one exists. Active = no
+// deadline or a deadline not yet past (DB CURRENT_DATE, Peru tz). Newest first.
+export async function getAllJobs(userId: string): Promise<JobListItem[]> {
+    const rows = await db
+        .select({
+            jobId: jobs.id,
+            titulo: jobs.titulo,
+            empresa: jobs.empresa,
+            modalidad: jobs.modalidad,
+            ubicacion: jobs.ubicacion,
+            salarioMin: jobs.salarioMin,
+            salarioMax: jobs.salarioMax,
+            moneda: jobs.moneda,
+            salarioPeriodo: jobs.salarioPeriodo,
+            salarioExplicito: jobs.salarioExplicito,
+            skills: jobs.skills,
+            applyLink: jobs.applyLink,
+            deadline: jobs.deadline,
+            matchId: matches.id,
+            rerankScore: matches.rerankScore,
+            status: matches.status,
+        })
+        .from(jobs)
+        .leftJoin(
+            matches,
+            and(eq(matches.jobId, jobs.id), eq(matches.userId, userId)),
+        )
+        .where(or(isNull(jobs.deadline), gte(jobs.deadline, sql`CURRENT_DATE`)))
+        .orderBy(desc(jobs.createdAt))
+        .limit(ALL_JOBS_LIMIT);
+
+    return rows.map((r) => ({
+        job_id: r.jobId,
+        match_id: r.matchId,
+        rerank_score: r.rerankScore,
+        status: r.status,
+        job: {
+            titulo: r.titulo,
+            empresa: r.empresa,
+            modalidad: r.modalidad,
+            ubicacion: r.ubicacion,
+            salario_min: r.salarioMin,
+            salario_max: r.salarioMax,
+            moneda: r.moneda,
+            salario_periodo: r.salarioPeriodo,
+            salario_explicito: r.salarioExplicito,
+            skills: r.skills,
+            apply_link: r.applyLink,
+            deadline: r.deadline,
+        },
+    }));
+}
+
 export interface MatchDetailJob {
     titulo: string | null;
     empresa: string | null;

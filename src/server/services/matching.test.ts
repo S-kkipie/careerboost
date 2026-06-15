@@ -206,6 +206,7 @@ import { ingestedMessages } from "@/server/drizzle/schemas/ingested-messages";
 import { jobs } from "@/server/drizzle/schemas/jobs";
 import { matches } from "@/server/drizzle/schemas/matches";
 import {
+    getAllJobs,
     getFeed,
     getMatchDetail,
     getSavedMatches,
@@ -586,5 +587,75 @@ describe("getSavedMatches", () => {
         const result = await getSavedMatches(T6_USER);
         expect(result.map((m) => m.job.titulo)).toEqual(["Saved A"]);
         expect(result[0]?.status).toBe("saved");
+    });
+});
+
+const T7_USER = "spec06-alljobs-test-user";
+
+describe("getAllJobs", () => {
+    const HASHES = ["aj-matched", "aj-unmatched", "aj-expired"];
+
+    afterAll(async () => {
+        await db.delete(user).where(eq(user.id, T7_USER));
+        await db.delete(jobs).where(inArray(jobs.dedupeHash, HASHES));
+    });
+
+    it("lists the whole active pool, with match fields only on the user's matched job", async () => {
+        await db.insert(user).values({
+            id: T7_USER,
+            name: "AllJobs Test",
+            email: "spec06-alljobs-test@example.com",
+            emailVerified: false,
+        });
+        const inserted = await db
+            .insert(jobs)
+            .values([
+                jobRow({ dedupeHash: "aj-matched", titulo: "Matched Job" }),
+                jobRow({ dedupeHash: "aj-unmatched", titulo: "Unmatched Job" }),
+                jobRow({
+                    dedupeHash: "aj-expired",
+                    titulo: "Expired Job",
+                    deadline: "2000-01-01",
+                }),
+            ])
+            .returning({ id: jobs.id, titulo: jobs.titulo });
+        const idOf = (t: string) =>
+            inserted.find((j) => j.titulo === t)?.id ?? "";
+
+        await persistMatches(T7_USER, [
+            {
+                jobId: idOf("Matched Job"),
+                score: 0.9,
+                rerankScore: 91,
+                explanation: "match",
+                flags: { skills_match: true, salario_transparente: false },
+            },
+        ]);
+
+        const all = await getAllJobs(T7_USER);
+        const titles = all.map((j) => j.job.titulo);
+        // Unmatched job appears even with no match for the user.
+        expect(titles).toContain("Matched Job");
+        expect(titles).toContain("Unmatched Job");
+        // Expired job is excluded.
+        expect(titles).not.toContain("Expired Job");
+
+        const matched = all.find((j) => j.job.titulo === "Matched Job");
+        expect(matched?.rerank_score).toBe(91);
+        expect(matched?.match_id).not.toBeNull();
+        expect(matched?.job_id).toBe(idOf("Matched Job"));
+
+        const unmatched = all.find((j) => j.job.titulo === "Unmatched Job");
+        expect(unmatched?.match_id).toBeNull();
+        expect(unmatched?.rerank_score).toBeNull();
+        expect(unmatched?.status).toBeNull();
+    });
+
+    it("does not leak another user's match onto the same job", async () => {
+        const all = await getAllJobs("spec06-alljobs-stranger");
+        const matched = all.find((j) => j.job.titulo === "Matched Job");
+        // Same global job is visible, but with no match for this stranger.
+        expect(matched?.match_id).toBeNull();
+        expect(matched?.rerank_score).toBeNull();
     });
 });

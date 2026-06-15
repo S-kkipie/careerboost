@@ -9,6 +9,7 @@ import { cn } from "@/frontend/lib/utils";
 
 const navLinks = [
     { href: "/feed", label: "Feed" },
+    { href: "/bolsa", label: "Bolsa" },
     { href: "/guardados", label: "Guardados" },
     { href: "/bandeja", label: "Bandeja" },
     { href: "/digest", label: "Tu digest" },

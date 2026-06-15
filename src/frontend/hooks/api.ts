@@ -41,6 +41,11 @@ export function useSavedMatches() {
     return useQuery(api.match.saved.get.queryOptions());
 }
 
+export function useAllJobs() {
+    const api = useElysia();
+    return useQuery(api.jobs.get.queryOptions());
+}
+
 export function useDigest() {
     const api = useElysia();
     return useQuery(api.digest.get.queryOptions());
